@@ -9,7 +9,7 @@ Sprint:		DUE:
 
 3		June 8
 	Finish all REST APIs and check to ensure that no more functionality is needed
-	Look at developing the Architecture and adding additional Microservice tools/		functionality (such as ribbon)
+	Look at developing the Architecture and adding additional Microservice tools/functionality (such as ribbon)
 	Check for bugs
 	Ensure Documentation is available where needed
 
