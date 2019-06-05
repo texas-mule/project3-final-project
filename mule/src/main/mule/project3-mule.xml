@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
 	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="efd853d1-dfcd-406e-b902-4177a6d19dbe" doc:description="Gmail connection used to send an invoice in an email" >
-		<email:smtps-connection host="smtp.gmail.com" user="tmfieldtrip@gmail.com" password="revature" port="465">
+		<email:smtps-connection host="smtp.gmail.com" user="tmfieldtrip@gmail.com" password="${secure::emailpassword}">
 			<tls:context>
 	            <tls:trust-store insecure="true"/>
 	        </tls:context>
@@ -19,6 +20,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="86051baa-7a0f-47e9-a92a-cc44bb1e6c5d" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="24c85e9e-14fe-4eab-9e2f-0417c4575a91" file="config.yaml" key="emailpassword" />
 	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" >
 		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice/{departmentid}" doc:description="Flow that sends out an Invoice in an email
 
@@ -27,18 +29,553 @@ Requires:
 {email}				query param		recipient email address
 " allowedMethods="GET" outputMimeType="application/json"/>
 		<set-variable value="#[attributes.uriParams.departmentid]" doc:name="Set Department ID" doc:id="399f58d7-a9b7-4988-a598-d27fe9158ffe" variableName="departmentid"/>
-		<set-payload value='#["Mule sent an email to " ++ (attributes.queryParams.email default "rcpierz@gmail.com")]' doc:name="Set Email" doc:id="d8a091f3-73d3-44f8-8332-576f1528ea7e" mimeType="text/html"/>
+		<set-payload doc:name="Set Email" doc:id="d8a091f3-73d3-44f8-8332-576f1528ea7e" mimeType="text/html" value="#[&quot;&lt;html xmlns=\&quot;http://www.w3.org/1999/xhtml\&quot;&gt;
+&lt;head&gt;
+  &lt;meta http-equiv=\&quot;Content-Type\&quot; content=\&quot;text/html; charset=UTF-8\&quot; /&gt;
+  &lt;meta name=\&quot;viewport\&quot; content=\&quot;width=device-width, initial-scale=1\&quot; /&gt;
+  &lt;title&gt;Oxygen Invoice&lt;/title&gt;
+
+  &lt;style type=\&quot;text/css\&quot;&gt;
+    /* Take care of image borders and formatting, client hacks */
+    img { max-width: 600px; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;}
+    a img { border: none; }
+    table { border-collapse: collapse !important;}
+    #outlook a { padding:0; }
+    .ReadMsgBody { width: 100%; }
+    .ExternalClass { width: 100%; }
+    .backgroundTable { margin: 0 auto; padding: 0; width: 100% !important; }
+    table td { border-collapse: collapse; }
+    .ExternalClass * { line-height: 115%; }
+    .container-for-gmail-android { min-width: 600px; }
+
+
+    /* General styling */
+    * {
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: none;
+      width: 100% !important;
+      margin: 0 !important;
+      height: 100%;
+      color: #676767;
+    }
+
+    td {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #777777;
+      text-align: center;
+      line-height: 21px;
+    }
+
+    a {
+      color: #676767;
+      text-decoration: none !important;
+    }
+
+    .pull-left {
+      text-align: left;
+    }
+
+    .pull-right {
+      text-align: right;
+    }
+
+    .header-lg,
+    .header-md,
+    .header-sm {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: normal;
+      padding: 35px 0 0;
+      color: #4d4d4d;
+    }
+
+    .header-md {
+      font-size: 24px;
+    }
+
+    .header-sm {
+      padding: 5px 0;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .content-padding {
+      padding: 20px 0 5px;
+    }
+
+    .mobile-header-padding-right {
+      width: 290px;
+      text-align: right;
+      padding-left: 10px;
+    }
+
+    .mobile-header-padding-left {
+      width: 290px;
+      text-align: left;
+      padding-left: 10px;
+    }
+
+    .free-text {
+      width: 100% !important;
+      padding: 10px 60px 0px;
+    }
+
+    .button {
+      padding: 30px 0;
+    }
+
+    .mini-block {
+      border: 1px solid #e5e5e5;
+      border-radius: 5px;
+      background-color: #ffffff;
+      padding: 12px 15px 15px;
+      text-align: left;
+      width: 253px;
+    }
+
+    .mini-container-left {
+      width: 278px;
+      padding: 10px 0 10px 15px;
+    }
+
+    .mini-container-right {
+      width: 278px;
+      padding: 10px 14px 10px 15px;
+    }
+
+    .product {
+      text-align: left;
+      vertical-align: top;
+      width: 175px;
+    }
+
+    .total-space {
+      padding-bottom: 8px;
+      display: inline-block;
+    }
+
+    .item-table {
+      padding: 50px 20px;
+      width: 560px;
+    }
+
+    .item {
+      width: 300px;
+    }
+
+    .mobile-hide-img {
+      text-align: left;
+      width: 125px;
+    }
+
+    .mobile-hide-img img {
+      border: 1px solid #e6e6e6;
+      border-radius: 4px;
+    }
+
+    .title-dark {
+      text-align: left;
+      border-bottom: 1px solid #cccccc;
+      color: #4d4d4d;
+      font-weight: 700;
+      padding-bottom: 5px;
+    }
+
+    .item-col {
+      padding-top: 20px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .force-width-gmail {
+      min-width:600px;
+      height: 0px !important;
+      line-height: 1px !important;
+      font-size: 1px !important;
+    }
+
+  &lt;/style&gt;
+
+  &lt;style type=\&quot;text/css\&quot; media=\&quot;screen\&quot;&gt;
+    @import url(http://fonts.googleapis.com/css?family=Oxygen:400,700);
+  &lt;/style&gt;
+
+  &lt;style type=\&quot;text/css\&quot; media=\&quot;screen\&quot;&gt;
+    @media screen {
+      /* Thanks Outlook 2013! */
+      * {
+        font-family: \'Oxygen\', \'Helvetica Neue\', \'Arial\', \'sans-serif\' !important;
+      }
+    }
+  &lt;/style&gt;
+
+  &lt;style type=\&quot;text/css\&quot; media=\&quot;only screen and (max-width: 480px)\&quot;&gt;
+    /* Mobile styles */
+    @media only screen and (max-width: 480px) {
+
+      table[class*=\&quot;container-for-gmail-android\&quot;] {
+        min-width: 290px !important;
+        width: 100% !important;
+      }
+
+      img[class=\&quot;force-width-gmail\&quot;] {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+
+      table[class=\&quot;w320\&quot;] {
+        width: 320px !important;
+      }
+
+      td[class*=\&quot;mobile-header-padding-left\&quot;] {
+        width: 160px !important;
+        padding-left: 0 !important;
+      }
+
+      td[class*=\&quot;mobile-header-padding-right\&quot;] {
+        width: 160px !important;
+        padding-right: 0 !important;
+      }
+
+      td[class=\&quot;header-lg\&quot;] {
+        font-size: 24px !important;
+        padding-bottom: 5px !important;
+      }
+
+      td[class=\&quot;content-padding\&quot;] {
+        padding: 5px 0 5px !important;
+      }
+
+       td[class=\&quot;button\&quot;] {
+        padding: 5px 5px 30px !important;
+      }
+
+      td[class*=\&quot;free-text\&quot;] {
+        padding: 10px 18px 30px !important;
+      }
+
+      td[class~=\&quot;mobile-hide-img\&quot;] {
+        display: none !important;
+        height: 0 !important;
+        width: 0 !important;
+        line-height: 0 !important;
+      }
+
+      td[class~=\&quot;item\&quot;] {
+        width: 140px !important;
+        vertical-align: top !important;
+      }
+
+      td[class~=\&quot;quantity\&quot;] {
+        width: 50px !important;
+      }
+
+      td[class~=\&quot;price\&quot;] {
+        width: 90px !important;
+      }
+
+      td[class=\&quot;item-table\&quot;] {
+        padding: 30px 20px !important;
+      }
+
+      td[class=\&quot;mini-container-left\&quot;],
+      td[class=\&quot;mini-container-right\&quot;] {
+        padding: 0 15px 15px !important;
+        display: block !important;
+        width: 290px !important;
+      }
+
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body bgcolor=\&quot;#f7f7f7\&quot;&gt;
+&lt;table align=\&quot;center\&quot; cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; class=\&quot;container-for-gmail-android\&quot; width=\&quot;100%\&quot;&gt;
+  &lt;tr&gt;
+    &lt;td align=\&quot;left\&quot; valign=\&quot;top\&quot; width=\&quot;100%\&quot; style=\&quot;background:repeat-x url(http://s3.amazonaws.com/swu-filepicker/4E687TRe69Ld95IDWyEg_bg_top_02.jpg) #ffffff;\&quot;&gt;
+      &lt;center&gt;
+      &lt;img src=\&quot;http://s3.amazonaws.com/swu-filepicker/SBb2fQPrQ5ezxmqUTgCr_transparent.png\&quot; class=\&quot;force-width-gmail\&quot;&gt;
+        &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot; bgcolor=\&quot;#ffffff\&quot; background=\&quot;http://s3.amazonaws.com/swu-filepicker/4E687TRe69Ld95IDWyEg_bg_top_02.jpg\&quot; style=\&quot;background-color:transparent\&quot;&gt;
+          &lt;tr&gt;
+            &lt;td width=\&quot;100%\&quot; height=\&quot;80\&quot; valign=\&quot;top\&quot; style=\&quot;text-align: center; vertical-align:middle;\&quot;&gt;
+            &lt;!--[if gte mso 9]&gt;
+            &lt;v:rect xmlns:v=\&quot;urn:schemas-microsoft-com:vml\&quot; fill=\&quot;true\&quot; stroke=\&quot;false\&quot; style=\&quot;mso-width-percent:1000;height:80px; v-text-anchor:middle;\&quot;&gt;
+              &lt;v:fill type=\&quot;tile\&quot; src=\&quot;http://s3.amazonaws.com/swu-filepicker/4E687TRe69Ld95IDWyEg_bg_top_02.jpg\&quot; color=\&quot;#ffffff\&quot; /&gt;
+              &lt;v:textbox inset=\&quot;0,0,0,0\&quot;&gt;
+            &lt;![endif]--&gt;
+              &lt;center&gt;
+                &lt;table cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; width=\&quot;600\&quot; class=\&quot;w320\&quot;&gt;
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;pull-left mobile-header-padding-left\&quot; style=\&quot;vertical-align: middle;\&quot;&gt;
+                      &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;137\&quot; height=\&quot;47\&quot; src=\&quot;https://revature.com/wp-content/uploads/2017/12/revature-logo-600x219.png\&quot; alt=\&quot;logo\&quot;&gt;&lt;/a&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;pull-right mobile-header-padding-right\&quot; style=\&quot;color: #4d4d4d;\&quot;&gt;
+                      &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;44\&quot; height=\&quot;47\&quot; src=\&quot;http://s3.amazonaws.com/swu-filepicker/k8D8A7SLRuetZspHxsJk_social_08.gif\&quot; alt=\&quot;twitter\&quot; /&gt;&lt;/a&gt;
+                      &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;38\&quot; height=\&quot;47\&quot; src=\&quot;http://s3.amazonaws.com/swu-filepicker/LMPMj7JSRoCWypAvzaN3_social_09.gif\&quot; alt=\&quot;facebook\&quot; /&gt;&lt;/a&gt;
+                      &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;40\&quot; height=\&quot;47\&quot; src=\&quot;http://s3.amazonaws.com/swu-filepicker/hR33ye5FQXuDDarXCGIW_social_10.gif\&quot; alt=\&quot;rss\&quot; /&gt;&lt;/a&gt;
+                    &lt;/td&gt;
+                  &lt;/tr&gt;
+                &lt;/table&gt;
+              &lt;/center&gt;
+              &lt;!--[if gte mso 9]&gt;
+              &lt;/v:textbox&gt;
+            &lt;/v:rect&gt;
+            &lt;![endif]--&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/center&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td align=\&quot;center\&quot; valign=\&quot;top\&quot; width=\&quot;100%\&quot; style=\&quot;background-color: #f7f7f7;\&quot; class=\&quot;content-padding\&quot;&gt;
+      &lt;center&gt;
+        &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;600\&quot; class=\&quot;w320\&quot;&gt;
+          &lt;tr&gt;
+            &lt;td class=\&quot;header-lg\&quot;&gt;
+              Department #&quot; ++ (vars.departmentid default &quot;City Hall&quot;) ++ &quot;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+            &lt;td class=\&quot;free-text\&quot;&gt;
+              Here are the deparment\'s portfilos.
+            &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+            &lt;td class=\&quot;button\&quot;&gt;
+              &lt;div&gt;&lt;!--[if mso]&gt;
+                &lt;v:roundrect xmlns:v=\&quot;urn:schemas-microsoft-com:vml\&quot; xmlns:w=\&quot;urn:schemas-microsoft-com:office:word\&quot; href=\&quot;http://\&quot; style=\&quot;height:45px;v-text-anchor:middle;width:155px;\&quot; arcsize=\&quot;15%\&quot; strokecolor=\&quot;#ffffff\&quot; fillcolor=\&quot;#ff6f6f\&quot;&gt;
+                  &lt;w:anchorlock/&gt;
+                  &lt;center style=\&quot;color:#ffffff;font-family:Helvetica, Arial, sans-serif;font-size:14px;font-weight:regular;\&quot;&gt;My Account&lt;/center&gt;
+                &lt;/v:roundrect&gt;
+              &lt;![endif]--&gt;&lt;a href=\&quot;http://\&quot;
+              style=\&quot;background-color:#ff6f6f;border-radius:5px;color:#ffffff;display:inline-block;font-family:\'Cabin\', Helvetica, Arial, sans-serif;font-size:14px;font-weight:regular;line-height:45px;text-align:center;text-decoration:none;width:155px;-webkit-text-size-adjust:none;mso-hide:all;\&quot;&gt;My Account&lt;/a&gt;&lt;/div&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;
+            &lt;td class=\&quot;w320\&quot;&gt;
+              &lt;table cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                &lt;tr&gt;
+                  &lt;td class=\&quot;mini-container-left\&quot;&gt;
+                    &lt;table cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                      &lt;tr&gt;
+                        &lt;td class=\&quot;mini-block-padding\&quot;&gt;
+                          &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot; style=\&quot;border-collapse:separate !important;\&quot;&gt;
+                            &lt;tr&gt;
+                              &lt;td class=\&quot;mini-block\&quot;&gt;
+                                &lt;span class=\&quot;header-sm\&quot;&gt;Main Contact&lt;/span&gt;&lt;br /&gt;
+                                John Smith (Comptroller)&lt;br /&gt;
+                                100 1st Street Revature, TX Office 233&lt;br /&gt;
+                                JSmith@revature.com&lt;br /&gt;
+                                (512)-234-5342
+                              &lt;/td&gt;
+                            &lt;/tr&gt;
+                          &lt;/table&gt;
+                        &lt;/td&gt;
+                      &lt;/tr&gt;
+                    &lt;/table&gt;
+                  &lt;/td&gt;
+                  &lt;td class=\&quot;mini-container-right\&quot;&gt;
+                    &lt;table cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                      &lt;tr&gt;
+                        &lt;td class=\&quot;mini-block-padding\&quot;&gt;
+                          &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot; style=\&quot;border-collapse:separate !important;\&quot;&gt;
+                            &lt;tr&gt;
+                              &lt;td class=\&quot;mini-block\&quot;&gt;
+                                &lt;span class=\&quot;header-sm\&quot;&gt;Financial Start Date&lt;/span&gt;&lt;br /&gt;
+                                January 1, 2015 &lt;br /&gt;
+                                &lt;br /&gt;
+                                &lt;span class=\&quot;header-sm\&quot;&gt;Financial End Date&lt;/span&gt; &lt;br /&gt;
+                                January 1, 2016
+                              &lt;/td&gt;
+                            &lt;/tr&gt;
+                          &lt;/table&gt;
+                        &lt;/td&gt;
+                      &lt;/tr&gt;
+                    &lt;/table&gt;
+                  &lt;/td&gt;
+                &lt;/tr&gt;
+              &lt;/table&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/center&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td align=\&quot;center\&quot; valign=\&quot;top\&quot; width=\&quot;100%\&quot; style=\&quot;background-color: #ffffff;  border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5;\&quot;&gt;
+      &lt;center&gt;
+        &lt;table cellpadding=\&quot;0\&quot; cellspacing=\&quot;0\&quot; width=\&quot;763\&quot; class=\&quot;w320\&quot;&gt;
+            &lt;tr&gt;
+              &lt;td class=\&quot;item-table\&quot;&gt;
+                &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;25\&quot; width=\&quot;100%\&quot;&gt;
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;title-dark\&quot; width=\&quot;300\&quot;&gt;
+                       Department
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;title-dark\&quot; width=\&quot;163\&quot;&gt;
+                      Total Expense
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;title-dark\&quot; width=\&quot;163\&quot;&gt;
+                      Total Revenue
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;title-dark\&quot; width=\&quot;163\&quot;&gt;
+                      Total Budget
+                    &lt;/td&gt;
+                  &lt;/tr&gt;
+
+
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;item-col item\&quot;&gt;
+                      &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                        &lt;tr&gt;
+                          &lt;td class=\&quot;mobile-hide-img\&quot;&gt;
+                            &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;110\&quot; height=\&quot;110\&quot; src=\&quot;https://i.etsystatic.com/14122708/r/il/2b4a2b/1498737187/il_794xN.1498737187_9wwt.jpg\&quot; alt=\&quot;item1\&quot;&gt;&lt;/a&gt;
+                          &lt;/td&gt;
+                          &lt;td class=\&quot;product\&quot;&gt;
+                            &lt;span style=\&quot;color: #4d4d4d; font-weight:bold;\&quot;&gt;Fire Department&lt;/span&gt; &lt;br /&gt;
+				207 Shaun Lane Revature, TX 
+                          &lt;/td&gt;
+                        &lt;/tr&gt;
+                      &lt;/table&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col\&quot;&gt;
+                      \$10,000
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col\&quot;&gt;
+                      \$11,234
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col\&quot;&gt;
+                        \$1,234
+                    &lt;/td&gt;
+                  &lt;/tr&gt;
+
+
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;item-col item\&quot;&gt;
+                      &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                        &lt;tr&gt;
+                          &lt;td class=\&quot;mobile-hide-img\&quot;&gt;
+                            &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;110\&quot; height=\&quot;110\&quot; src=\&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Seal_of_the_United_States_Department_of_Education.svg/1200px-Seal_of_the_United_States_Department_of_Education.svg.png\&quot; alt=\&quot;item2\&quot;&gt;&lt;/a&gt;
+                          &lt;/td&gt;
+                          &lt;td class=\&quot;product\&quot;&gt;
+                            &lt;span style=\&quot;color: #4d4d4d; font-weight: bold;\&quot;&gt;Department of Education&lt;/span&gt; &lt;br /&gt;
+                            103 Andres Drive Revature, TX
+                          &lt;/td&gt;
+                        &lt;/tr&gt;
+                      &lt;/table&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col quantity\&quot;&gt;
+                      \$33,764
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col price\&quot;&gt;
+                      \$100,000
+                    &lt;/td&gt;
+                   &lt;td class=\&quot;item-col price\&quot;&gt;
+                     \$66,236
+                   &lt;/td&gt;
+                  &lt;/tr&gt;
+
+
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;item-col item\&quot;&gt;
+                      &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;100%\&quot;&gt;
+                        &lt;tr&gt;
+                          &lt;td class=\&quot;mobile-hide-img\&quot;&gt;
+                            &lt;a href=\&quot;\&quot;&gt;&lt;img width=\&quot;110\&quot; height=\&quot;110\&quot; src=\&quot;https://tiptonutility.com/files_uploaded/wastewater.jpg\&quot; alt=\&quot;item2\&quot;&gt;&lt;/a&gt;
+                          &lt;/td&gt;
+                          &lt;td class=\&quot;product\&quot;&gt;
+                            &lt;span style=\&quot;color: #4d4d4d; font-weight: bold;\&quot;&gt;Sewage &amp; Waste Managment&lt;/span&gt; &lt;br /&gt;
+                            334 Robert Pierz Way Revature, TX
+                          &lt;/td&gt;
+                        &lt;/tr&gt;
+                      &lt;/table&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col quantity\&quot;&gt;
+                      \$23,453
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col price\&quot;&gt;
+                      \$0
+                    &lt;/td&gt;
+                   &lt;td class=\&quot;item-col price\&quot;&gt;
+                      &lt;font color=\&quot;red\&quot;&gt;
+                        - \$23,452
+                      &lt;/font&gt; 
+                    &lt;/td&gt;
+                  &lt;/tr&gt;
+
+
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;item-col item mobile-row-padding\&quot;&gt;&lt;/td&gt;
+                    &lt;td class=\&quot;item-col quantity\&quot;&gt;&lt;/td&gt;
+                    &lt;td class=\&quot;item-col price\&quot;&gt;&lt;/td&gt;
+                  &lt;/tr&gt;
+
+
+                  &lt;tr&gt;
+                    &lt;td class=\&quot;item-col item\&quot; style=\&quot;border-top: 1px solid #cccccc;\&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col quantity\&quot; style=\&quot;border-top: 1px solid #cccccc;\&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col price\&quot; style=\&quot;text-align:right; padding-right: 10px; border-top: 1px solid #cccccc;\&quot;&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;Overall Expense &lt;/span&gt; &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;Overall Revenue &lt;/span&gt; &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;&lt;/span&gt; &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot; style=\&quot;font-weight: bold; color: #4d4d4d\&quot;&gt;Overall Budget&lt;/span&gt;
+                    &lt;/td&gt;
+                    &lt;td class=\&quot;item-col price\&quot; style=\&quot;text-align: left; border-top: 1px solid #cccccc;\&quot;&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;\$67,217&lt;/span&gt; &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;\$111,234&lt;/span&gt;  &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot;&gt;&lt;/span&gt;  &lt;br /&gt;
+                      &lt;span class=\&quot;total-space\&quot; style=\&quot;font-weight:bold; color: #4d4d4d\&quot;&gt;\$44,026&lt;/span&gt;
+                    &lt;/td&gt;
+                  &lt;/tr&gt;  
+                &lt;/table&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/center&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td align=\&quot;center\&quot; valign=\&quot;top\&quot; width=\&quot;100%\&quot; style=\&quot;background-color: #f7f7f7; height: 100px;\&quot;&gt;
+      &lt;center&gt;
+        &lt;table cellspacing=\&quot;0\&quot; cellpadding=\&quot;0\&quot; width=\&quot;600\&quot; class=\&quot;w320\&quot;&gt;
+          &lt;tr&gt;
+            &lt;td style=\&quot;padding: 25px 0 25px\&quot;&gt;
+              &lt;strong&gt;Awesome Inc&lt;/strong&gt;&lt;br /&gt;
+              1234 Awesome St &lt;br /&gt;
+              Wonderland &lt;br /&gt;&lt;br /&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/center&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;&quot;]"/>
 		<logger level="INFO" doc:name="Log Email Payload" doc:id="4ac71acd-af96-4016-a0d2-5afe32d961bc" message="#[payload]"/>
 		<email:send doc:name="Send Email" doc:id="64bf4df8-d253-4805-89e2-681a14c48054" config-ref="Email_SMTP" fromAddress="tmfieldtrip@gmail.com" subject="Texas Mule - Invoice" doc:description="Connector that sends an invoice to an email address
 
 Requires:
 {email}				query param		sets email destination
 {departmentid}	uri param			sets department destination">
-			<email:to-addresses >
+			<email:to-addresses>
 				<email:to-address value='#[attributes.queryParams.email]' />
 			</email:to-addresses>
-			<email:body contentType="text/plain">
+			<email:body contentType="text/html">
+
 			</email:body>
 		</email:send>
-	</flow>
+	
+</flow>
+
 </mule>
