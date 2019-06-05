@@ -1,4 +1,4 @@
-# Project 2 The Power - Stock Application
+# Project 3 City Comptroller
 
 ## Main Project Responsibilites
 
