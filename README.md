@@ -165,6 +165,10 @@ if its somethihng the team lead sees that its a easy addition that wont interfer
 ------------------------------------------------------------------------------------------------------------------
 
 # Git Command Line Instructions
+View the current status of your git repository and see what current branch your on.
+```
+git status
+```
 View all branches
 ```
 git branch -a
