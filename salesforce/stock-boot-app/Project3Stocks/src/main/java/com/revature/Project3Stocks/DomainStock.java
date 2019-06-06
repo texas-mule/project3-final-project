@@ -1,7 +1,6 @@
 package com.revature.Project3Stocks;
 
 import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -141,7 +140,6 @@ public class DomainStock {
 
 	public DomainStock() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 }
