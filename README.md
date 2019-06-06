@@ -160,7 +160,7 @@ MicroServices:
 - Configure Salesforce Data Persistence
 - Connect to Salesforce Data Persistence
 - Finalize all endpoints
-- Finish writing SOAP controllers
+- Finish writing rest controllers
 - Start developing authentication library
 - 50% complete: develop Spring boot apps.
 - Start development on visualizer
