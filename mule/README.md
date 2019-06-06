@@ -19,7 +19,7 @@
 /login/{username}/{password}
 ```
 
-## stock portfolio
+## Stock Portfolio JSON Example
 ```
 [{
 name:"Fire Department",
