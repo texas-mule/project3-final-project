@@ -237,8 +237,10 @@ if its somethihng the team lead sees that its a easy addition that wont interfer
 ------------------------------------------------------------------------------------------------------------------
 # Git Branch Standard 
 When creating your new branch follow this naming convention
+```
 {yourfirstname}/{teambranch}/{feature that your working on}
 ex. andres/mule/addingassets
+```
 
 
 # Git Command Line Instructions
