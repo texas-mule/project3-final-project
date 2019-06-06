@@ -235,6 +235,11 @@ if its somethihng the team lead sees that its a easy addition that wont interfer
 - primary focus is to show the clients what technologies we use rather than functionality
 
 ------------------------------------------------------------------------------------------------------------------
+# Git Branch Standard 
+When creating your new branch follow this naming convention
+{yourfirstname}/{teambranch}/{feature that your working on}
+ex. andres/mule/addingassets
+
 
 # Git Command Line Instructions
 View the current status of your git repository and see what current branch your on.
