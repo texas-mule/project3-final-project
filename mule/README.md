@@ -19,6 +19,21 @@
 /login/{username}/{password}
 ```
 
+## stock portfolio
+```
+[{
+name:"Fire Department",
+ticket-symbol:"google",
+shares:60000,
+purchaseprice:180.00
+}, 
+{
+name:"Police Department",
+ticket-symbol:"aapl",
+shares:50000,
+purchaseprice:200.00
+}]
+```
 
 ## Funds JSON example
 ```
