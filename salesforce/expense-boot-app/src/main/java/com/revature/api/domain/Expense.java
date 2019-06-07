@@ -1,9 +1,9 @@
 package com.revature.api.domain;
 
 
-import java.math.BigDecimal;
 import java.util.Calendar;
-
+import java.util.TimeZone;
+import java.text.DecimalFormat;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import com.google.gson.Gson;
 
@@ -27,14 +26,14 @@ public class Expense implements Comparable<Expense>{
 	@NotBlank
 	private String organization;
 	
-	private BigDecimal amount;
+	private String amount;
 	
 	@Pattern(regexp="[a-zA-Z\\s]+")
 	@javax.validation.constraints.Size(min=2, max=20)
 	@NotBlank
 	private String description;
 	
-	private Calendar date;
+	private String date;
 
 	private Integer quantity;
 
@@ -58,11 +57,12 @@ public class Expense implements Comparable<Expense>{
 		this.organization = organization;
 	}
 
-	public BigDecimal getAmount() {
+	public String getAmount() {
 		return amount;
 	}
+	
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 
@@ -75,11 +75,21 @@ public class Expense implements Comparable<Expense>{
 	}
 
 	public Calendar getDate() {
-		return date;
+		String [] date = this.date.split("-");
+		Integer year = Integer.valueOf(date[0]);
+		Integer month = Integer.valueOf(date[1]);
+		Integer day = Integer.valueOf(date[2]);
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		cal.set(year, month - 1, day);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
 	}
 
-	public void setDate(Calendar date) {
-		this.date = date;
+	public void setDate(String object) {
+		this.date = object;
 	}
 
 	public Integer getQuantity() {
@@ -100,6 +110,5 @@ public class Expense implements Comparable<Expense>{
 	public int compareTo(Expense o) {
 		return date.compareTo(o.date);
 	}
-	
 	
 }

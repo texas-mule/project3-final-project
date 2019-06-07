@@ -1,19 +1,18 @@
 package com.revature.api.domain;
 
 
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 import com.google.gson.Gson;
 
 
 public class ExpenseAbrev {
-	
 
 
 	private String organization;
 	
 
-	private BigDecimal amount;
+	private String amount;
 	
 
 	private String description;
@@ -42,11 +41,12 @@ public class ExpenseAbrev {
 		this.organization = organization;
 	}
 
-	public BigDecimal getAmount() {
+	public String getAmount() {
 		return amount;
 	}
+	
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 
