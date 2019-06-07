@@ -52,3 +52,21 @@ amount:1.00,
 date:"2019-04-01"
 }
 ```
+
+## Other server urls
+
+Mule Server
+```
+http://texasmuleprod1.us-east-2.elasticbeanstalk.com/
+```
+
+Microservices
+```
+ec2-3-14-70-98.us-east-2.compute.amazonaws.com
+```
+
+Salesforce
+```
+DB3: project3-saleforce-test-3.cchrp7vuxlcj.us-east-2.rds.amazonaws.com
+Port: 5432
+```
