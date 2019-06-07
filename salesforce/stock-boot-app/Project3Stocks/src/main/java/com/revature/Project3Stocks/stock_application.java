@@ -57,13 +57,17 @@ public class stock_application extends SpringBootServletInitializer {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 	}
 
+	/*
+	 * @PostMapping("/signin") public String login()
+	 */
 	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder stockapp){
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder stockapp) {
 		return stockapp.sources(stock_application.class).properties("spring.config.name: application.stock)");
 	}
-	
+
 	public static void main(String[] args) {
 		System.setProperty("spring.config.name", "application.stock");
 		SpringApplication.run(stock_application.class, args);
 	}
+
 }
