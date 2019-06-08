@@ -1,16 +1,12 @@
 package com.revature.api.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.revature.api.domain.Expense;
 import com.revature.api.domain.ExpenseAbrev;
 import com.revature.api.service.ExpenseService;
@@ -30,167 +25,120 @@ import com.revature.api.service.ExpenseService;
 @RequestMapping("/expense")
 public class ExpenseController {
 
-	HttpServletResponse response;
-	
 	@Autowired
 	ExpenseService expenseService;
 
-	@GetMapping("/{organization}")
-	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
-			@RequestParam("startDate") Optional<Calendar> startDate,
-			@RequestParam("endDate") Optional<Calendar> endDate) throws IOException {
-		List<Expense> list = expenseService.findByOrganization(organization);
-		Collections.sort(list);
-		if (!startDate.isPresent() && !endDate.isPresent()){
-			return list;
-		}
-
-		List<Expense> filtered = new ArrayList<Expense>();
-		if (!startDate.isPresent()){
-			for (Expense e : list){
-				if (e.getDate().compareTo(endDate.get()) <= 0)
-					filtered.add(e);
-			}
-		}
-		else {
-			if (!endDate.isPresent()){
-				for (Expense e : list){
-					if (e.getDate().compareTo(startDate.get()) >= 0)
-						filtered.add(e);
-				}
-			} else {
-				for (Expense e : list){
-					if (e.getDate().compareTo(startDate.get()) >= 0 && e.getDate().compareTo(endDate.get()) <= 0)
-						filtered.add(e);
-				}
-			}			
-		}
-		return filtered;
-	}
-	
-	@GetMapping("/{organization}/summary")
-	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
-			@RequestParam("startDate") Optional<Calendar> startDate,
-			@RequestParam("endDate") Optional<Calendar> endDate) throws IOException {
-		List<Expense> list = expenseService.findByOrganization(organization);
-		Collections.sort(list);
-		List<ExpenseAbrev> filtered = new ArrayList<ExpenseAbrev>();
-		if (!startDate.isPresent() && !endDate.isPresent()){
-			for (Expense e : list){
-				ExpenseAbrev abrev = new ExpenseAbrev();
-				abrev.setOrganization(e.getOrganization());
-				abrev.setAmount(e.getAmount());
-				abrev.setDescription(e.getDescription());
-				abrev.setQuantity(e.getQuantity());
-				filtered.add(abrev);
-			}
-			return filtered;
-		}
-
-		if (!startDate.isPresent()){
-			for (Expense e : list){
-				if (e.getDate().compareTo(endDate.get()) <= 0){
-					ExpenseAbrev abrev = new ExpenseAbrev();
-					abrev.setOrganization(e.getOrganization());
-					abrev.setAmount(e.getAmount());
-					abrev.setDescription(e.getDescription());
-					abrev.setQuantity(e.getQuantity());
-					filtered.add(abrev);
-				}
-				return filtered;
-			}
-		}
-		else {
-			if (!endDate.isPresent()){
-				for (Expense e : list){
-					if (e.getDate().compareTo(startDate.get()) >= 0){
-						ExpenseAbrev abrev = new ExpenseAbrev();
-						abrev.setOrganization(e.getOrganization());
-						abrev.setAmount(e.getAmount());
-						abrev.setDescription(e.getDescription());
-						abrev.setQuantity(e.getQuantity());
-						filtered.add(abrev);
-					}
-				}
-			} else {
-				for (Expense e : list){
-					if (e.getDate().compareTo(startDate.get()) >= 0 && e.getDate().compareTo(endDate.get()) <= 0){
-						ExpenseAbrev abrev = new ExpenseAbrev();
-						abrev.setOrganization(e.getOrganization());
-						abrev.setAmount(e.getAmount());
-						abrev.setDescription(e.getDescription());
-						abrev.setQuantity(e.getQuantity());
-						filtered.add(abrev);
-					}						
-				}
-			}			
-		}
-		return filtered;
-	}
-	
-	@GetMapping("/{organization}/{date}")
-	public Expense getExpenseByDate(@PathVariable("organization") String organization,
-			@PathVariable("date") Calendar date) throws IOException {
-		List<Expense> list = expenseService.findByOrganization(organization);
-		Collections.sort(list);
-		for (Expense e : list){
-			if (e.getDate().compareTo(date) == 0)
-				return e;
-		}
-		throw new IOException();
-	}
+	private DecimalFormat df = new DecimalFormat("0.00");
+	HttpServletResponse response;
 
 	@PostMapping()
-	public HttpServletResponse addExpense(@RequestBody Map<String, Object> payload) {
-		System.out.println(payload.toString());
+	public HttpServletResponse addExpense(@RequestBody Map<String, Object> payload) throws IOException {
 		Expense expense = new Expense();
 		expense.setOrganization((String) payload.get("organization"));
-		Double d = 0.0;
-		if (payload.get("amount").getClass().isInstance(Integer.class)){
-			d += (Integer) payload.get("amount");
-			expense.setAmount(BigDecimal.valueOf(d));
-		} else
-			expense.setAmount(BigDecimal.valueOf((Double) payload.get("amount")));
-		
-		expense.setDate(getDate(payload.get("date").toString()));
+		switch (payload.get("amount").getClass().getName()) {
+		case ("java.lang.Integer"): {
+			Double d = 0.0;
+			d += ((Integer) payload.get("amount"));
+			expense.setAmount(df.format(d));
+			break;
+		}
+		case ("java.lang.Double"): {
+			expense.setAmount(df.format((Double) payload.get("amount")));
+			break;
+		}
+		case ("java.lang.String"): {
+			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
+			break;
+		}
+		}
+		expense.setDate((String) payload.get("date"));
 		expense.setDescription((String) payload.get("description"));
 		expense.setQuantity((Integer) payload.get("quantity"));
 		expenseService.save(expense);
 		return response;
 	}
 
-	private Calendar getDate(String object) {
-		String [] date = object.split("-");
-		Integer year = Integer.valueOf(date[0]);
-		Integer month = Integer.valueOf(date[1]);
-		Integer day = Integer.valueOf(date[2]);
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day);
-		return cal;
+	@GetMapping("/{organization}")
+	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
+			throws IOException {
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
+		List<Expense> list = expenseService.findByOrganization(organization, start, end);
+		Collections.sort(list);
+		return list;
 	}
 
-	@PutMapping("/{id}")
-	public HttpServletResponse updateExpense(@PathVariable("id") Integer id, @RequestBody Map<String, Object> payload) {
+	@GetMapping("/{organization}/summary")
+	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
+			throws IOException {
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
+		List<ExpenseAbrev> list = expenseService.findSummaryByOrganization(organization, start, end);
+		return list;
+	}
+
+	@GetMapping("/{organization}/date/{date}")
+	public List<Expense> getExpenseByDate(@PathVariable("organization") String organization,
+			@PathVariable("date") String date) throws IOException {
+		List<Expense> list = expenseService.findByOrganization(organization, date, date);
+		Collections.sort(list);
+		return list;
+	}
+
+	@GetMapping("/{organization}/description/{description")
+	public List<Expense> getExpenseByDescription(@PathVariable("organization") String organization,
+			@PathVariable("description") String description, @RequestParam("start") Optional<String> startDate,
+			@RequestParam("end") Optional<String> endDate) {
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
+		return expenseService.findByOrganizationAndDescription(organization, description, start, end);
+	}
+
+	@PutMapping("/{organization}/id/{id}")
+	public HttpServletResponse updateExpense(@PathVariable("organization") String organization,
+			@PathVariable("id") Integer id, @RequestBody Map<String, Object> payload) {
+		if (expenseService.getById(organization, id) == null)
+			return response;
 		Expense expense = new Expense();
 		expense.setId(id);
 		expense.setOrganization((String) payload.get("organization"));
-		Double d = 0.0;
-		if (payload.get("amount").getClass().isInstance(Integer.class)){
-			d += (Integer) payload.get("amount");
-			expense.setAmount(BigDecimal.valueOf(d));
-		} else
-			expense.setAmount(BigDecimal.valueOf((Double) payload.get("amount")));
-		
-		expense.setDate(getDate(payload.get("date").toString()));
+		switch (payload.get("amount").getClass().getName()) {
+		case ("java.lang.Integer"): {
+			Double d = 0.0;
+			d += ((Integer) payload.get("amount"));
+			expense.setAmount(df.format(d));
+			break;
+		}
+		case ("java.lang.Double"): {
+			expense.setAmount(df.format((Double) payload.get("amount")));
+			break;
+		}
+		case ("java.lang.String"): {
+			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
+			break;
+		}
+		}
+		expense.setDate((String) payload.get("date"));
 		expense.setDescription((String) payload.get("description"));
 		expense.setQuantity((Integer) payload.get("quantity"));
 		expenseService.save(expense);
 		return response;
 	}
-	
-	@DeleteMapping("/{id}")
-	public HttpServletResponse deleteExpense(@PathVariable("id") Integer id) {
+
+	@DeleteMapping("/{organization}/id/{id}")
+	public HttpServletResponse deleteExpense(@PathVariable("organization") String organization,
+			@PathVariable("id") Integer id) {
+		if (expenseService.getById(organization, id) == null)
+			return response;
 		expenseService.delete(id);
 		return response;
 	}
+
+	@GetMapping("/{organization}/id/{id}")
+	public Expense getById(@PathVariable("organization") String organization, @PathVariable("id") Integer id) {
+		return expenseService.getById(organization, id);
+	}
+
 }
