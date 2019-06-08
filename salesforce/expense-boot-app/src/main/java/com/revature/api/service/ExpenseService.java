@@ -4,9 +4,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.revature.api.domain.Expense;
 import com.revature.api.domain.ExpenseAbrev;
 import com.revature.api.domain.ExpenseAbrevList;
@@ -59,6 +63,25 @@ public class ExpenseService {
 			transformedList.add(ExpenseAbrev.from(e));
 		}
 		return transformedList.get();
+	}
+
+	public List<Expense> findByOrganizationAndDescription(String organization, String description, String start,
+			String end) {
+		List<Expense> list = findByOrganization(organization, start, end);
+		Collections.sort(list);
+		list.removeIf(e -> !e.getDescription().equals(description));
+		return list;
+	}
+
+	public Expense getById(String organization, Integer id) {
+		Optional<Expense> oe = expenseRepository.findById(id);
+		if (oe.isPresent()) {
+			Expense e = oe.get();
+			if (!e.getOrganization().equals(organization))
+				return null;
+			return e;
+		}
+		return null;
 	}
 
 }
