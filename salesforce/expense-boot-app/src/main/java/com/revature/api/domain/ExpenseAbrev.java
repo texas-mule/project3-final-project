@@ -1,25 +1,13 @@
 package com.revature.api.domain;
 
-
-import java.text.DecimalFormat;
-
 import com.google.gson.Gson;
-
 
 public class ExpenseAbrev {
 
-
 	private String organization;
-	
-
 	private String amount;
-	
-
 	private String description;
-
-	
 	private Integer quantity;
-
 
 	public ExpenseAbrev() {
 		super();
@@ -44,7 +32,6 @@ public class ExpenseAbrev {
 	public String getAmount() {
 		return amount;
 	}
-	
 
 	public void setAmount(String amount) {
 		this.amount = amount;
@@ -62,6 +49,15 @@ public class ExpenseAbrev {
 	public String toString() {
 		Gson gson = new Gson();
 		return gson.toJson(this);
+	}
+
+	public static ExpenseAbrev from(Expense e) {
+		ExpenseAbrev ea = new ExpenseAbrev();
+		ea.setOrganization(e.getOrganization());
+		ea.setAmount(e.getAmount());
+		ea.setDescription(e.getDescription());
+		ea.setQuantity(e.getQuantity());
+		return ea;
 	}
 
 }
