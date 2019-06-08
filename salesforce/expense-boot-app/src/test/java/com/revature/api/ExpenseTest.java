@@ -2,83 +2,69 @@ package com.revature.api;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class ExpenseTest {
+import com.revature.api.domain.Expense;
 
-	@Test
-	public void testExpense() {
-		fail("Not yet implemented");
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class ExpenseTest {
+	
+	Expense expense;
+	
+	@Before
+	public void setup(){
+	expense = new Expense();
+	expense.setId(1);
+	expense.setAmount("500.00");
+	expense.setDescription("Test");
+	expense.setDate("2019-06-07");
+	expense.setOrganization("Test");
+	expense.setQuantity(5);
 	}
 
 	@Test
 	public void testGetId() {
-		fail("Not yet implemented");
+		assertEquals((Integer) 1, expense.getId());
 	}
 
-	@Test
-	public void testSetId() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetOrganization() {
-		fail("Not yet implemented");
+		assertEquals("Test", expense.getOrganization());
 	}
 
-	@Test
-	public void testSetOrganization() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetAmount() {
-		fail("Not yet implemented");
+		assertEquals("500.00" , expense.getAmount());
 	}
 
-	@Test
-	public void testSetAmount() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetDescription() {
-		fail("Not yet implemented");
+		assertEquals("Test", expense.getDescription());
 	}
 
-	@Test
-	public void testSetDescription() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetDate() {
-		fail("Not yet implemented");
+		assertEquals("2019-06-07", getDate(expense.getDate()));
 	}
 
-	@Test
-	public void testSetDate() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetQuantity() {
-		fail("Not yet implemented");
+		assertEquals((Integer) 5, expense.getQuantity());
 	}
-
-	@Test
-	public void testSetQuantity() {
-		fail("Not yet implemented");
+	
+	private String getDate(Calendar cal) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = cal.getTime();
+		System.out.println(sdf.format(date));
+		return sdf.format(date);
 	}
-
-	@Test
-	public void testToString() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCompareTo() {
-		fail("Not yet implemented");
-	}
-
 }

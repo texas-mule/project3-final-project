@@ -79,7 +79,7 @@ public class Expense implements Comparable<Expense>{
 		Integer year = Integer.valueOf(date[0]);
 		Integer month = Integer.valueOf(date[1]);
 		Integer day = Integer.valueOf(date[2]);
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		cal.set(year, month - 1, day);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
