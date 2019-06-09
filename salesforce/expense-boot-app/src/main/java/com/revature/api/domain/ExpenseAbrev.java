@@ -54,7 +54,7 @@ public class ExpenseAbrev {
 	public static ExpenseAbrev from(Expense e) {
 		ExpenseAbrev ea = new ExpenseAbrev();
 		ea.setOrganization(e.getOrganization());
-		ea.setAmount(e.getAmount());
+		ea.setAmount(e.getAmount().toString());
 		ea.setDescription(e.getDescription());
 		ea.setQuantity(e.getQuantity());
 		return ea;

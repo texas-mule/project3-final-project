@@ -1,6 +1,10 @@
 package com.revature.api;
 
 import static org.junit.Assert.*;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import com.revature.api.domain.Expense;
@@ -13,9 +17,9 @@ public class ExpenseTest {
 	public void setup() {
 		expense = new Expense();
 		expense.setId(1);
-		expense.setAmount("500.00");
+		expense.setAmount(new BigDecimal(500.00));
 		expense.setDescription("Test");
-		expense.setDate("2019-06-07");
+		expense.setDate(Date.valueOf("2019-06-07"));
 		expense.setOrganization("Test");
 		expense.setQuantity(5);
 	}
@@ -32,7 +36,7 @@ public class ExpenseTest {
 
 	@Test
 	public void testGetAmount() {
-		assertEquals("500.00", expense.getAmount());
+		assertTrue(new Double(500.0).equals(expense.getAmount().doubleValue()));
 	}
 
 	@Test

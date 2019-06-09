@@ -1,7 +1,6 @@
 package com.revature.api.controller;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,48 +21,39 @@ import com.revature.api.domain.ExpenseAbrev;
 import com.revature.api.service.ExpenseService;
 
 @RestController
-@RequestMapping("/expense")
+@RequestMapping("/")
 public class ExpenseController {
 
 	@Autowired
 	ExpenseService expenseService;
 
-	private DecimalFormat df = new DecimalFormat("0.00");
 	HttpServletResponse response;
 
 	@PostMapping()
-	public HttpServletResponse addExpense(@RequestBody Map<String, Object> payload) throws IOException {
-		Expense expense = new Expense();
-		expense.setOrganization((String) payload.get("organization"));
-		switch (payload.get("amount").getClass().getName()) {
-		case ("java.lang.Integer"): {
-			Double d = 0.0;
-			d += ((Integer) payload.get("amount"));
-			expense.setAmount(df.format(d));
-			break;
+	public String addExpense(@RequestBody Map<String, Object> payload, HttpServletResponse res) throws IOException {
+		try {
+			expenseService.save(Expense.from(payload));
+			res.setStatus(HttpServletResponse.SC_CREATED);
+			return "record saved";
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			res.setContentType("application/json");
+			return "{\r\n" + "  \"message\": \"Bad request. The post body format is as follows:\",\r\n"
+					+ "  \"format\": {\r\n" + "    \"organization\": \"<Organization name>\",\r\n"
+					+ "    \"amount\": \"<Amount spent as a number>\",\r\n"
+					+ "    \"date\": \"<Date string in yyyy-mm-dd format>\",\r\n"
+					+ "    \"description\": \"<Brief description>\",\r\n"
+					+ "    \"quantity\": \"<How many were purchased as a number>\"\r\n" + "  }\r\n" + "}";
 		}
-		case ("java.lang.Double"): {
-			expense.setAmount(df.format((Double) payload.get("amount")));
-			break;
-		}
-		case ("java.lang.String"): {
-			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
-			break;
-		}
-		}
-		expense.setDate((String) payload.get("date"));
-		expense.setDescription((String) payload.get("description"));
-		expense.setQuantity((Integer) payload.get("quantity"));
-		expenseService.save(expense);
-		return response;
 	}
 
 	@GetMapping("/{organization}")
 	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
 			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
 			throws IOException {
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
+		String start = startDate.orElse(null);
+		String end = endDate.orElse(null);
 		List<Expense> list = expenseService.findByOrganization(organization, start, end);
 		Collections.sort(list);
 		return list;
@@ -73,8 +63,8 @@ public class ExpenseController {
 	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
 			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
 			throws IOException {
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
+		String start = startDate.orElse(null);
+		String end = endDate.orElse(null);
 		List<ExpenseAbrev> list = expenseService.findSummaryByOrganization(organization, start, end);
 		return list;
 	}
@@ -87,44 +77,23 @@ public class ExpenseController {
 		return list;
 	}
 
-	@GetMapping("/{organization}/description/{description")
+	@GetMapping("/{organization}/description/{description}")
 	public List<Expense> getExpenseByDescription(@PathVariable("organization") String organization,
 			@PathVariable("description") String description, @RequestParam("start") Optional<String> startDate,
 			@RequestParam("end") Optional<String> endDate) {
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
+		String start = startDate.orElse(null);
+		String end = endDate.orElse(null);
 		return expenseService.findByOrganizationAndDescription(organization, description, start, end);
 	}
 
 	@PutMapping("/{organization}/id/{id}")
-	public HttpServletResponse updateExpense(@PathVariable("organization") String organization,
-			@PathVariable("id") Integer id, @RequestBody Map<String, Object> payload) {
-		if (expenseService.getById(organization, id) == null)
-			return response;
-		Expense expense = new Expense();
-		expense.setId(id);
-		expense.setOrganization((String) payload.get("organization"));
-		switch (payload.get("amount").getClass().getName()) {
-		case ("java.lang.Integer"): {
-			Double d = 0.0;
-			d += ((Integer) payload.get("amount"));
-			expense.setAmount(df.format(d));
-			break;
+	public String updateExpense(@PathVariable("organization") String organization, @PathVariable("id") Integer id,
+			@RequestBody Map<String, Object> payload, HttpServletResponse res) throws IOException {
+		if (expenseService.getById(organization, id) == null) {
+			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return "Not found";
 		}
-		case ("java.lang.Double"): {
-			expense.setAmount(df.format((Double) payload.get("amount")));
-			break;
-		}
-		case ("java.lang.String"): {
-			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
-			break;
-		}
-		}
-		expense.setDate((String) payload.get("date"));
-		expense.setDescription((String) payload.get("description"));
-		expense.setQuantity((Integer) payload.get("quantity"));
-		expenseService.save(expense);
-		return response;
+		return addExpense(payload, res);
 	}
 
 	@DeleteMapping("/{organization}/id/{id}")
