@@ -47,5 +47,9 @@ Requires:
 		</email:send>
 	
 </flow>
+	<flow name="MuleTestEnpoint" doc:id="8c513cc9-143b-402d-b3b5-6b45b2b3e1dc" >
+		<http:listener doc:name="Listener" doc:id="dec8f8dd-b95a-4347-86fd-c46204c7011d" config-ref="HTTP_Listener_config" path="/test"/>
+		<set-payload value="payload has been set" doc:name="Set Payload" doc:id="8fe2800e-241e-4e0a-9dfe-497de5337348" />
+	</flow>
 
 </mule>
