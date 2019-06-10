@@ -64,7 +64,7 @@ public class StockService {
 //          double currentPrice = obj.getDouble("price");
             double currentPrice = this.getStockPrice(symbol);
             
-            double profits = this.profitCalculator(1, 10, currentPrice);
+            double profits = this.profitCalculator(shares, amountSpent, currentPrice);
             profitOrLoss = profitOrLoss + profits;
             
             stock.add(new Stock(symbol, name, amountSpent, shares, currentPrice, profits));
