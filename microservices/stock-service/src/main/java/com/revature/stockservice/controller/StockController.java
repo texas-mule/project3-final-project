@@ -19,7 +19,7 @@ public class StockController {
 	StockService stockService;
 	
 	@GetMapping("/{symbol}")
-	public double getStockPrice(@PathVariable("symbol") final String symbol){
+	public String getStockPrice(@PathVariable("symbol") final String symbol){
 		
 		return stockService.getStockPrice(symbol);
 	}
