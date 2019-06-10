@@ -37,9 +37,9 @@
 			<version>45.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>city.comptroller</groupId>
+			<groupId>com.sforce</groupId>
 			<artifactId>userloginrecord</artifactId>
-			<version>1.0</version>
+			<version>0.0.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
@@ -58,4 +58,10 @@
 		</plugins>
 	</build>
 	
+	<repositories>
+      <repository>
+         <id>localrepository</id>
+         <url>file://${basedir}/lib</url>
+      </repository>
+	</repositories>
 </project>
