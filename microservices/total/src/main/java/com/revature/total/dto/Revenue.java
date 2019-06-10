@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * 
  * @author david
- *
+ * The Revenue.java is a Revenue Object
  */
 @XmlRootElement	
 @JsonIgnoreProperties(ignoreUnknown = true)

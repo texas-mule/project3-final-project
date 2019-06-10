@@ -8,6 +8,11 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * 
+ * @author david
+ * Group Object
+ */
 @Entity
 @Table(name = "expense")
 public class Group {
