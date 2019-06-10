@@ -1,0 +1,62 @@
+#%RAML 1.0
+title: Total
+version: v1
+/total:
+  /expenses:
+    /{organization}/{date1}/{date2}:
+      get:
+        description: get expenses summarized over the quarter, which is date1 and date2
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "10.00"
+                    }
+                  ]
+    /all/{organization}:
+      get:
+        description: get expenses over all inputs
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "10.00"
+                    }
+                  ]
+  /revenues:
+    /{organization}/{date1}/{date2}:
+      get:
+        description: get revenues summarized over the quarter, which is date1 and date2
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "10.00"
+                    }
+                  ]
+    /all/{organization}:
+      get:
+        description: get revenues over all inputs
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "10.00"
+                    }
+                  ]
