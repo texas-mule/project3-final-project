@@ -11,6 +11,7 @@
 	<groupId>com.revature</groupId>
 	<artifactId>total-expenses</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>total-expenses</name>
 	<description>Total Expenses project for Project 3 Microservice Team</description>
 
