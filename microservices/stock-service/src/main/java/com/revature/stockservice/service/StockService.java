@@ -34,6 +34,14 @@ public class StockService {
 	public HashMap<String, Department> aggregateOrgStock(String organization) {
 		
 		HashMap<String, Department> orgStockDetails = new HashMap<>();
+		List<Stock> stock = new ArrayList<>();
+		
+		double profitOrLoss= 0;
+		double shares = 0; 
+		double amountSpent = 0; 
+		double currentPrice = 0;
+	    String name = null;
+	    String symbol = null;
 		
 		HttpHeaders headers = new HttpHeaders();
 	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -47,52 +55,58 @@ public class StockService {
 	    	return null;
 	    	
 	    }else {
-	 
-	    JSONObject jobj_tickerSymbols =  new JSONObject(tickerSymbols);
-	    JSONArray jarr_tickerSymbols = jobj_tickerSymbols.getJSONArray("stockList");
 	    
-	    double profitOrLoss = 0;
-	    List<Stock> stock = new ArrayList<>();
+	    	JSONArray tickerSymbols_arr = new JSONArray(tickerSymbols);
 	    
-	    for(int i=0;i<jarr_tickerSymbols.length();i++) {
-	    	JSONObject obj=jarr_tickerSymbols.getJSONObject(i);
-	    	
-            String name = obj.getString("companyName");		
-    		String symbol = obj.getString("tickerSymbol");
-    		double shares = obj.getDouble("shares");
-    		double amountSpent = obj.getDouble("amountSpent");
-//          double currentPrice = obj.getDouble("price");
-            double currentPrice = this.getStockPrice(symbol);
-            
-            double profits = this.profitCalculator(shares, amountSpent, currentPrice);
-            profitOrLoss = profitOrLoss + profits;
-            
-            stock.add(new Stock(symbol, name, amountSpent, shares, currentPrice, profits));
-            
-	    }
-	    orgStockDetails.put(organization, new Department(profitOrLoss, stock));
+		    for(int i=0;i<tickerSymbols_arr.length();i++) {
+		    	
+		    	JSONObject obj=tickerSymbols_arr.getJSONObject(i);
+		    	
+		    	if(obj.has("companyName")) {
+		    		name = obj.getString("companyName");
+	    		}
+		    
+		    	if(obj.has("tickerSymbol")) {
+		    		symbol = obj.getString("tickerSymbol");
+	    		}
+	    		
+	    		if(obj.has("shares")) {
+	    			shares = obj.getDouble("shares");
+	    		}
+	    		
+	    		if(obj.has("amountSpent")) {
+	    			amountSpent = obj.getDouble("amountSpent");
+	    		}
+	    		
+	    		JSONObject stockPrice_obj = new JSONObject(this.getStockPrice(symbol));
+	    		
+	    		if(stockPrice_obj.has("price")) {
+	    			currentPrice = stockPrice_obj.getDouble("price");
+	    		}
+	            
+	            double profits = this.profitCalculator(shares, amountSpent, currentPrice);
+	            profitOrLoss = profitOrLoss + profits;
+	            
+	            stock.add(new Stock(symbol, name, amountSpent, shares, currentPrice, profits));
+		    }
+	    	orgStockDetails.put(organization, new Department(profitOrLoss, stock));
 	    
-//		String name = obj.getString("companyName");		
-//		String symbol = obj.getString("tickerSymbol");
-//		double shares = obj.getDouble("shares");
-//		double amountSpent = obj.getDouble("amountSpent");
-	    
-		return orgStockDetails;
+	    	return orgStockDetails;
+		
 		}
-	    
 	}
 	
 	/**
 	 * Calculate profit per stock
 	 * @param noOfShare
-	 * @param stockpp
-	 * @param stocksp
+	 * @param stockpp purchase price
+	 * @param stocksp current price
 	 * @return
 	 */
-	public double profitCalculator(double noOfShare, double stockpp, double stocksp) {
+	public double profitCalculator(double noOfShare, double amountSpent, double stocksp) {
 		
 		double profit;
-		profit = (noOfShare * stocksp) - (noOfShare * stockpp);
+		profit = (noOfShare * stocksp) - amountSpent;
 		return profit;
 		
 	}
@@ -102,18 +116,16 @@ public class StockService {
 	 * @param symbol
 	 * @return
 	 */
-	public double getStockPrice(String symbol) {
+	public String getStockPrice(String symbol) {
 		
 		ResponseEntity<String> response = restTemplate.exchange("https://financialmodelingprep.com/api/v3/stock/real-time-price/"+symbol, HttpMethod.GET, null,
 				  new ParameterizedTypeReference<String>(){});
 		String stock = response.getBody();
 		
 		if(stock.isEmpty()) {
-			return 0;
+			return null;
 		}
-		
-		JSONObject obj = new JSONObject(stock);
-		return obj.getDouble("price");
+		return stock;
 	}
 	
 }
