@@ -1,0 +1,44 @@
+#%RAML 1.0
+title: Salesforce Funds API
+baseUri: 
+version: v1
+
+
+/funds:
+  description: Base route for the API
+  get:
+  /{department}:
+      description: URI for the department whose data you wish to lookup
+      get:
+        description: Gets the current funds for the department you define within the URI
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                      {
+                        "department": "fire",
+                        "funds": 12000.25
+                      }
+      /byDate:
+        get:
+          description: Query params to specify start and end dates for looking at funds at a particular segment of dates
+          queryParameters:
+            startDate:
+              required: true
+              type: string
+              example: "2019-06-01"
+            endDate:
+              required: true
+              type: string
+              example: "2019-06-05"
+          responses:
+            200:
+          body:
+            application/json:
+                  example: |
+                        {
+                          "department": "fire",
+                          "funds": 12000.25,
+                          "between dates": "2019-06-01-2019-06-04:"
+                        }
