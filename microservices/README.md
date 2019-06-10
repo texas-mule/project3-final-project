@@ -5,6 +5,7 @@ baseUri: TBA
 version: v1
 
 /building:
+
   /{squarefeet}:
       get:
         description: describes the price of building breaks it down by materials and labor
