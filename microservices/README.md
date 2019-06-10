@@ -1,7 +1,10 @@
 # Readme
 #%RAML 1.0
+
 title: Quoting API
+
 baseUri: TBA
+
 version: v1
 
 /building:
