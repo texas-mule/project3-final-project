@@ -31,6 +31,20 @@ version: v1
                       "amount": "10.00"
                     }
                   ]
+    /after/{organization}/{date}:
+      get:
+        description: get expenses over all inputs
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "10.00"
+                    }
+                  ]
   /revenues:
     /{organization}/{date1}/{date2}:
       get:
@@ -42,7 +56,7 @@ version: v1
                 example: |
                   [
                     {
-                      "organization": "Fire Department",
+                      "organization": "fire",
                       "amount": "10.00"
                     }
                   ]
@@ -56,7 +70,21 @@ version: v1
                 example: |
                   [
                     {
-                      "organization": "Fire Department",
+                      "organization": "fire",
+                      "amount": "10.00"
+                    }
+                  ]
+    /after/{organization}/{date}:
+      get:
+        description: get expenses over all inputs
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "fire",
                       "amount": "10.00"
                     }
                   ]
