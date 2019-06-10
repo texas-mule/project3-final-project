@@ -19,8 +19,8 @@ public class RevenueController {
 	@Autowired
 	RevenueService service;
 
-	@PostMapping()
-	public void AddRevenue(@PathVariable String name, @PathVariable float cost, @PathVariable String item) {
+	@PostMapping("/add/{name}/{cost}/{item}")
+	public void AddRevenue(@PathVariable("name") String name, @PathVariable("cost") float cost, @PathVariable("item") String item) {
 		service.AddRevenueEntry(new RevenueDomain(name, item, BigDecimal.valueOf(cost), null));
 	}
 
