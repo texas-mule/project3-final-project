@@ -3,37 +3,27 @@ package com.revature.api;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import com.revature.api.domain.Expense;
+import com.revature.api.domain.ExpenseAbrev;
 
-public class ExpenseTest {
+public class ExpenseAbrevTest {
 
-	Expense expense;
+	ExpenseAbrev expense;
 
 	/**
-	 * Create a new Expense object
-	 * Test setters
+	 * Create a new expense summary object.
+	 * Test the setters.
 	 */
 	@Before
 	public void setup() {
-		expense = new Expense();
-		expense.setId(1);
+		expense = new ExpenseAbrev();
 		expense.setAmount("500.00");
 		expense.setDescription("Test");
-		expense.setDate("2019-06-07");
 		expense.setOrganization("Test");
 		expense.setQuantity(5);
 	}
 
 	/**
-	 * Test getId
-	 */
-	@Test
-	public void testGetId() {
-		assertEquals((Integer) 1, expense.getId());
-	}
-
-	/**
-	 * Test getOrganization
+	 * Test getOrganzation
 	 */
 	@Test
 	public void testGetOrganization() {
@@ -62,14 +52,6 @@ public class ExpenseTest {
 	@Test
 	public void testGetQuantity() {
 		assertEquals((Integer) 5, expense.getQuantity());
-	}
-	
-	/**
-	 * Test getDate
-	 */
-	@Test
-	public void testGetDate() {
-		assertEquals("2019-06-07", expense.getDate());
 	}
 
 }

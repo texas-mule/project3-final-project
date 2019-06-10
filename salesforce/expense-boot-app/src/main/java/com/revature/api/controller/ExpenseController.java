@@ -1,6 +1,5 @@
 package com.revature.api.controller;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
@@ -21,9 +20,16 @@ import com.revature.api.domain.Expense;
 import com.revature.api.domain.ExpenseAbrev;
 import com.revature.api.service.ExpenseService;
 
+
+/**
+ * @author sweinhart
+ *
+ */
 @RestController
 @RequestMapping("/expense")
 public class ExpenseController {
+	
+	private static final String AMOUNT = "amount";
 
 	@Autowired
 	ExpenseService expenseService;
@@ -31,25 +37,35 @@ public class ExpenseController {
 	private DecimalFormat df = new DecimalFormat("0.00");
 	HttpServletResponse response;
 
+	/**
+	 * Adds a new Expense object to the database.
+	 * Required fields are Organization, Expense description, 
+	 * Expense amount, Date in yyyy-MM-dd, and quantity of items in expenditure
+	 * 
+	 * @param payload : HTTP request body in json
+	 * @return : HTTP response
+	 */
 	@PostMapping()
-	public HttpServletResponse addExpense(@RequestBody Map<String, Object> payload) throws IOException {
+	public HttpServletResponse addExpense(@RequestBody Map<String, Object> payload) {
 		Expense expense = new Expense();
 		expense.setOrganization((String) payload.get("organization"));
-		switch (payload.get("amount").getClass().getName()) {
-		case ("java.lang.Integer"): {
-			Double d = 0.0;
-			d += ((Integer) payload.get("amount"));
-			expense.setAmount(df.format(d));
-			break;
-		}
-		case ("java.lang.Double"): {
-			expense.setAmount(df.format((Double) payload.get("amount")));
-			break;
-		}
-		case ("java.lang.String"): {
-			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
-			break;
-		}
+		switch (payload.get(AMOUNT).getClass().getName()) {
+			case ("java.lang.Integer"): {
+				Double d = 0.0;
+				d += ((Integer) payload.get(AMOUNT));
+				expense.setAmount(df.format(d));
+				break;
+				}
+			case ("java.lang.Double"): {
+				expense.setAmount(df.format((Double) payload.get(AMOUNT)));
+				break;
+				}
+			case ("java.lang.String"): {
+				expense.setAmount(df.format(Double.valueOf((String) payload.get(AMOUNT))));
+				break;
+				}
+			default:
+				expense.setAmount(df.format(Double.valueOf((String) payload.get(AMOUNT))));
 		}
 		expense.setDate((String) payload.get("date"));
 		expense.setDescription((String) payload.get("description"));
@@ -58,10 +74,17 @@ public class ExpenseController {
 		return response;
 	}
 
+	/**
+	 * Returns a list of Expense objects by Organization optionally filtered by dates
+	 * 
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param startDate : (Optional) yyyy-MM-dd
+	 * @param endDate : (Optional) yyyy-MM-dd
+	 * @return List of Expense objects optionally filtered by dates
+	 */
 	@GetMapping("/{organization}")
 	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
-			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
-			throws IOException {
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
 		String start = startDate.isPresent() ? startDate.get() : null;
 		String end = endDate.isPresent() ? endDate.get() : null;
 		List<Expense> list = expenseService.findByOrganization(organization, start, end);
@@ -69,24 +92,47 @@ public class ExpenseController {
 		return list;
 	}
 
+	/**
+	 * Returns a list of Expense summary objects by Organization optionally filtered by dates
+	 * 
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param startDate : (Optional) yyyy-MM-dd
+	 * @param endDate : (Optional) yyyy-MM-dd
+	 * @return List of Expense objects optionally filtered by dates
+	 */
 	@GetMapping("/{organization}/summary")
 	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
-			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
-			throws IOException {
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
 		String start = startDate.isPresent() ? startDate.get() : null;
 		String end = endDate.isPresent() ? endDate.get() : null;
-		List<ExpenseAbrev> list = expenseService.findSummaryByOrganization(organization, start, end);
-		return list;
+		return expenseService.findSummaryByOrganization(organization, start, end);
 	}
 
+	/**
+	 * Returns a list of Expense objects by Organization on a specified date
+	 * 
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param date : Path Variable - yyyy-MM-dd (String)
+	 * @return List of Expense filtered by dates
+	 */
 	@GetMapping("/{organization}/date/{date}")
 	public List<Expense> getExpenseByDate(@PathVariable("organization") String organization,
-			@PathVariable("date") String date) throws IOException {
+			@PathVariable("date") String date) {
 		List<Expense> list = expenseService.findByOrganization(organization, date, date);
 		Collections.sort(list);
 		return list;
 	}
 
+	/**
+	 * Returns a list of Expense objects by Organization 
+	 * and Expense description optionally filtered by dates
+	 * 
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param description : Path Variable - Expense Description (String)
+	 * @param startDate : (Optional) yyyy-MM-dd
+	 * @param endDate : (Optional) yyyy-MM-dd
+	 * @return List of Expense objects optionally filtered by dates
+	 */
 	@GetMapping("/{organization}/description/{description")
 	public List<Expense> getExpenseByDescription(@PathVariable("organization") String organization,
 			@PathVariable("description") String description, @RequestParam("start") Optional<String> startDate,
@@ -96,6 +142,16 @@ public class ExpenseController {
 		return expenseService.findByOrganizationAndDescription(organization, description, start, end);
 	}
 
+	/**
+	 * Updates an existing Expense object in the database.
+	 * Required fields are Organization, Expense Id, Expense description, 
+	 * Expense amount, Date in yyyy-MM-dd, and quantity of items in expenditure
+	 * 
+	 * @param payload : HTTP request body in json
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param id : Path Variable - Expense id (Integer)
+	 * @return : HTTP response
+	 */
 	@PutMapping("/{organization}/id/{id}")
 	public HttpServletResponse updateExpense(@PathVariable("organization") String organization,
 			@PathVariable("id") Integer id, @RequestBody Map<String, Object> payload) {
@@ -104,21 +160,23 @@ public class ExpenseController {
 		Expense expense = new Expense();
 		expense.setId(id);
 		expense.setOrganization((String) payload.get("organization"));
-		switch (payload.get("amount").getClass().getName()) {
-		case ("java.lang.Integer"): {
-			Double d = 0.0;
-			d += ((Integer) payload.get("amount"));
-			expense.setAmount(df.format(d));
-			break;
-		}
-		case ("java.lang.Double"): {
-			expense.setAmount(df.format((Double) payload.get("amount")));
-			break;
-		}
-		case ("java.lang.String"): {
-			expense.setAmount(df.format(Double.valueOf((String) payload.get("amount"))));
-			break;
-		}
+		switch (payload.get(AMOUNT).getClass().getName()) {
+			case ("java.lang.Integer"): {
+				Double d = 0.0;
+				d += ((Integer) payload.get(AMOUNT));
+				expense.setAmount(df.format(d));
+				break;
+			}
+			case ("java.lang.Double"): {
+				expense.setAmount(df.format((Double) payload.get(AMOUNT)));
+				break;
+			}
+			case ("java.lang.String"): {
+				expense.setAmount(df.format(Double.valueOf((String) payload.get(AMOUNT))));
+				break;
+			}
+			default:
+				expense.setAmount(df.format(Double.valueOf((String) payload.get(AMOUNT))));
 		}
 		expense.setDate((String) payload.get("date"));
 		expense.setDescription((String) payload.get("description"));
@@ -127,6 +185,13 @@ public class ExpenseController {
 		return response;
 	}
 
+	/**
+	 * Deletes an Expense object in the database
+	 * 
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param id : Path Variable - Expense id (Integer)
+	 * @return HTTP response
+	 */
 	@DeleteMapping("/{organization}/id/{id}")
 	public HttpServletResponse deleteExpense(@PathVariable("organization") String organization,
 			@PathVariable("id") Integer id) {
@@ -136,6 +201,12 @@ public class ExpenseController {
 		return response;
 	}
 
+	/**
+	 * Returns an Expense object specified by id
+	 * @param organization : Path Variable - Organization Name (String)
+	 * @param id : Path Variable - Expense id (Integer)
+	 * @return Expense
+	 */
 	@GetMapping("/{organization}/id/{id}")
 	public Expense getById(@PathVariable("organization") String organization, @PathVariable("id") Integer id) {
 		return expenseService.getById(organization, id);

@@ -9,6 +9,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class ExpenseBootAppApplicationTests {
 
+	/**
+	 * Test Context Loads
+	 */
 	@Test
 	public void contextLoads() {
 	}
