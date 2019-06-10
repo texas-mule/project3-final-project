@@ -17,7 +17,7 @@
         <!-- <module>salesforce/pom.xml</module>        -->
 		<!-- <module>devops/pom.xml</module>           -->
         <!-- <module>microservices/pom.xml</module>     -->
-        <!-- <module>mule/pom.xml</module>              -->
+        <module>mule/pom.xml</module>             
     </modules>
     
     <dependencies>
