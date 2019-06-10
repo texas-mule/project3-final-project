@@ -1,5 +1,8 @@
 package com.revature.api.domain;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+
 import com.google.gson.Gson;
 
 /**
@@ -87,7 +91,7 @@ public class Expense implements Comparable<Expense> {
 	 */
 	public String getOrganization() {
 		return organization;
-	}
+	} 
 
 	/**
 	 * Set Organization Name
@@ -179,6 +183,31 @@ public class Expense implements Comparable<Expense> {
 	@Override
 	public int compareTo(Expense o) {
 		return date.compareTo(o.date);
+	}
+
+	public static Expense from(Map<String, Object> payload) throws RuntimeException {
+		Expense expense = new Expense();
+		expense.setOrganization((String) payload.get("organization"));
+		Object amount = payload.get("amount");
+		String amountClass = amount.getClass().getName();
+		switch (amountClass) {
+		case ("java.lang.Integer"): {
+			expense.setAmount(BigDecimal.valueOf((Integer)amount));
+			break;
+		}
+		case ("java.lang.Double"): {
+			expense.setAmount(BigDecimal.valueOf((Double)amount));
+			break;
+		}
+		case ("java.lang.String"): {
+			expense.setAmount(BigDecimal.valueOf(Double.parseDouble((String) amount)));
+			break;
+		}
+		}
+		expense.setDate(Date.valueOf((String) payload.get("date")));
+		expense.setDescription((String) payload.get("description"));
+		expense.setQuantity((Integer) payload.get("quantity"));
+		return expense;
 	}
 
 }

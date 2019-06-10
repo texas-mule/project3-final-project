@@ -1,6 +1,6 @@
 package com.revature.api.service;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,9 +51,9 @@ public class ExpenseService {
 		List<Expense> list = expenseRepository.findByOrganization(organization);
 		try {
 			if (start != null)
-				list.removeIf(e -> LocalDate.parse(e.getDate()).compareTo(LocalDate.parse(start)) < 0);
+				list.removeIf(e -> e.getDate().compareTo(Date.valueOf(start)) < 0);
 			if (end != null)
-				list.removeIf(e -> LocalDate.parse(e.getDate()).compareTo(LocalDate.parse(end)) > 0);
+				list.removeIf(e -> e.getDate().compareTo(Date.valueOf(end)) > 0);
 		} catch (DateTimeParseException e) {
 			list = new ArrayList<>();
 			return list;
