@@ -54,6 +54,9 @@ public class TotalController {
 	@GetMapping("/expenses/{organization}/{date1}/{date2}")
 	public Group totalExpensesByDates
 	(@PathVariable String organization, @PathVariable Date date1, @PathVariable Date date2) {
+		//Calls an Expense array for the given expenses you get
+		//serviceURL_1 is the rest service called upon
+		//used for setting the endpoint for the organization
 		Expense[] list = restTemplate.getForObject(serviceURL_1 + "/" 
 				+ organization, Expense[].class);
 		
@@ -61,6 +64,9 @@ public class TotalController {
 		BigDecimal total = new BigDecimal(0.00);
 		int listsize = list.length;
 		Date datewant;
+		
+		//goes over the dates set and checks for the given inputs if the dates
+		// are between them, returns the date if they are and add to total
 		for (int i = 0; i < listsize; i++){
 			datewant = list[i].getDate();
 			if(organization.equals(list[i].getOrganization())){
@@ -75,7 +81,6 @@ public class TotalController {
 		group.setAmount(total);
 		group.setOrganization(organization);
 		return group;
-		//return restTemplate.getForObject(serviceURL + "/" + organization, Expense[].class);
 	}
 	
 	/**
@@ -92,6 +97,8 @@ public class TotalController {
 		String output = "output";
 		BigDecimal total = new BigDecimal(0.00);
 		int listsize = list.length;
+		
+		//goes overall all entries and adds the amount up
 		for (int i = 0; i < listsize; i++){
 			total = total.add(list[i].getAmount());
 		}
@@ -164,58 +171,11 @@ public class TotalController {
 		//return restTemplate.getForObject(serviceURL + "/" + organization, Expense[].class);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	@GetMapping("/expenses/byquarter/{organization}/{date}/{quarter}")
-	public String totalExpensesByQuarter
-	(@PathVariable String organization, @PathVariable String date, @PathVariable String quarter) {
-		Expense[] list = restTemplate.getForObject(serviceURL_1 + "/" 
-				+ organization, Expense[].class);
-		
-		String output = "output";
-		BigDecimal total = new BigDecimal(0.00);
-		int listsize = list.length;
-		Date datewant, date1 = null, date2 = null;
-		long newdate =  Long.parseLong(date);
-		
-		if(quarter.equals("Q1")){
-			date1 = new Date(newdate-01-01);
-			date2 = new Date(newdate-03-31);
-		} else if (quarter.equals("Q2")){
-			date1 = new Date(newdate-04-01);
-			date2 = new Date(newdate-06-30);
-			System.out.println(date1 + " " + date2);
-		} else if (quarter.equals("Q3")){
-			date1 = new Date(newdate-07-01);
-			date2 = new Date(newdate-9-30);
-		} else if (quarter.equals("Q4")){
-			date1 = new Date(newdate-10-01);
-			date2 = new Date(newdate-12-31);
-		}
-		
-		
-		for (int i = 0; i < listsize; i++){
-			datewant = list[i].getDate();
-			if(organization.equals(list[i].getOrganization())){
-				if(date1.compareTo(datewant) * datewant.compareTo(date2) >= 0){
-					total = total.add(list[i].getAmount());
-				}
-			}
-		}
-		output = total.toPlainString();
-		
-		return output;
-		//return restTemplate.getForObject(serviceURL + "/" + organization, Expense[].class);
-	}
-	*/
-	
-	
+	/**
+	 * Synchronous client to perform HTTP requests, exposing a simple, 
+	 * template method API over underlying HTTP client libraries
+	 * @return
+	 */
 	@Bean
 	public RestTemplate rest() {
 		return new RestTemplate();
