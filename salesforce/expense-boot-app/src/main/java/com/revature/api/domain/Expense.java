@@ -1,8 +1,5 @@
 package com.revature.api.domain;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-
 import com.google.gson.Gson;
 
 /**
@@ -48,12 +44,12 @@ public class Expense implements Comparable<Expense> {
 	 * Expense Amount in US Dollars
 	 */
 	private String amount;
-	
+
 	/**
 	 * Date in yyyy-MM-dd format
 	 */
 	private String date;
-	
+
 	/**
 	 * Quantity if items purchased
 	 */
@@ -68,7 +64,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense id
-	 * 
+	 *
 	 * @return id : Integer
 	 */
 	public Integer getId() {
@@ -77,7 +73,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense id
-	 * 
+	 *
 	 * @param id : Integer
 	 */
 	public void setId(Integer id) {
@@ -86,16 +82,16 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Organization Name
-	 * 
+	 *
 	 * @return organization : String
 	 */
 	public String getOrganization() {
 		return organization;
-	} 
+	}
 
 	/**
 	 * Set Organization Name
-	 * 
+	 *
 	 * @param organization : String
 	 */
 	public void setOrganization(String organization) {
@@ -104,7 +100,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Amount
-	 * 
+	 *
 	 * @return amount : String
 	 */
 	public String getAmount() {
@@ -113,7 +109,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Amount
-	 * 
+	 *
 	 * @param amount : String
 	 */
 	public void setAmount(String amount) {
@@ -122,7 +118,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Description
-	 * 
+	 *
 	 * @return description : String
 	 */
 	public String getDescription() {
@@ -131,7 +127,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Description
-	 * 
+	 *
 	 * @param description : String
 	 */
 	public void setDescription(String description) {
@@ -140,7 +136,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Date
-	 * 
+	 *
 	 * @return date : String yyyy-MM-dd
 	 */
 	public String getDate() {
@@ -149,7 +145,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Date
-	 * 
+	 *
 	 * @param date : String yyyy-MM-dd
 	 */
 	public void setDate(String date) {
@@ -158,7 +154,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Item Quantity
-	 * 
+	 *
 	 * @return quantity : Integer
 	 */
 	public Integer getQuantity() {
@@ -167,7 +163,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Item Quantity
-	 * 
+	 *
 	 * @param quantity : Integer
 	 */
 	public void setQuantity(Integer quantity) {
@@ -183,31 +179,6 @@ public class Expense implements Comparable<Expense> {
 	@Override
 	public int compareTo(Expense o) {
 		return date.compareTo(o.date);
-	}
-
-	public static Expense from(Map<String, Object> payload) throws RuntimeException {
-		Expense expense = new Expense();
-		expense.setOrganization((String) payload.get("organization"));
-		Object amount = payload.get("amount");
-		String amountClass = amount.getClass().getName();
-		switch (amountClass) {
-		case ("java.lang.Integer"): {
-			expense.setAmount(BigDecimal.valueOf((Integer)amount));
-			break;
-		}
-		case ("java.lang.Double"): {
-			expense.setAmount(BigDecimal.valueOf((Double)amount));
-			break;
-		}
-		case ("java.lang.String"): {
-			expense.setAmount(BigDecimal.valueOf(Double.parseDouble((String) amount)));
-			break;
-		}
-		}
-		expense.setDate(Date.valueOf((String) payload.get("date")));
-		expense.setDescription((String) payload.get("description"));
-		expense.setQuantity((Integer) payload.get("quantity"));
-		return expense;
 	}
 
 }
