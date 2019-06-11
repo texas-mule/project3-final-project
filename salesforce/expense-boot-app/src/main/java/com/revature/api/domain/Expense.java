@@ -44,12 +44,12 @@ public class Expense implements Comparable<Expense> {
 	 * Expense Amount in US Dollars
 	 */
 	private String amount;
-
+	
 	/**
 	 * Date in yyyy-MM-dd format
 	 */
 	private String date;
-
+	
 	/**
 	 * Quantity if items purchased
 	 */
@@ -64,7 +64,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense id
-	 *
+	 * 
 	 * @return id : Integer
 	 */
 	public Integer getId() {
@@ -73,7 +73,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense id
-	 *
+	 * 
 	 * @param id : Integer
 	 */
 	public void setId(Integer id) {
@@ -82,7 +82,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Organization Name
-	 *
+	 * 
 	 * @return organization : String
 	 */
 	public String getOrganization() {
@@ -91,7 +91,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Organization Name
-	 *
+	 * 
 	 * @param organization : String
 	 */
 	public void setOrganization(String organization) {
@@ -100,7 +100,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Amount
-	 *
+	 * 
 	 * @return amount : String
 	 */
 	public String getAmount() {
@@ -109,7 +109,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Amount
-	 *
+	 * 
 	 * @param amount : String
 	 */
 	public void setAmount(String amount) {
@@ -118,7 +118,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Description
-	 *
+	 * 
 	 * @return description : String
 	 */
 	public String getDescription() {
@@ -127,7 +127,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Description
-	 *
+	 * 
 	 * @param description : String
 	 */
 	public void setDescription(String description) {
@@ -136,7 +136,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Date
-	 *
+	 * 
 	 * @return date : String yyyy-MM-dd
 	 */
 	public String getDate() {
@@ -145,7 +145,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Date
-	 *
+	 * 
 	 * @param date : String yyyy-MM-dd
 	 */
 	public void setDate(String date) {
@@ -154,7 +154,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Get Expense Item Quantity
-	 *
+	 * 
 	 * @return quantity : Integer
 	 */
 	public Integer getQuantity() {
@@ -163,7 +163,7 @@ public class Expense implements Comparable<Expense> {
 
 	/**
 	 * Set Expense Item Quantity
-	 *
+	 * 
 	 * @param quantity : Integer
 	 */
 	public void setQuantity(Integer quantity) {
