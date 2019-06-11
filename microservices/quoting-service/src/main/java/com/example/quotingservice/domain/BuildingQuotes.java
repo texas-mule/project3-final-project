@@ -18,18 +18,42 @@ public class BuildingQuotes {
 		matrial.put("SteelFrames-matrials", (double)10);
 		matrial.put("foundataion",(double)8);
 		matrial.put("contruction", (double)8);
-		
 	}
 	public double BuildingEstimate(int squareFootage){
 		HashMap<String,Double> itemized=new HashMap<String, Double>();
 		for (Map.Entry<String, Double> entry : matrial.entrySet()) {
 		    String key = entry.getKey();
 		    double value = entry.getValue();
-		    itemized.put(key, value*squareFootage);
+		    matrial.put(key, value*squareFootage);
 		    quote+=value*squareFootage;
 		   
 		}
 		return quote;
+	}
+	public HashMap<String,Double> itemized(int squareFootage){
+		HashMap<String,Double> itemized=new HashMap<String, Double>();
+		for (Map.Entry<String, Double> entry : matrial.entrySet()) {
+		    String key = entry.getKey();
+		    double value = entry.getValue();
+		    itemized.put(key, value*squareFootage);
+		    quote+=value*squareFootage;
+		    
+		   
+		}
+		return itemized;
+		
+	}
+	public double getQuote() {
+		return quote;
+	}
+	public void setQuote(double quote) {
+		this.quote = quote;
+	}
+	public HashMap<String, Double> getMatrial() {
+		return matrial;
+	}
+	public void setMatrial(HashMap<String, Double> matrial) {
+		this.matrial = matrial;
 	}
 
 }
