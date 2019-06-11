@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stock")
 
-public class stock_application extends SpringBootServletInitializer {
+public class StockApplication extends SpringBootServletInitializer {
 
 	@Autowired
 	StockService stockService;
@@ -62,12 +62,12 @@ public class stock_application extends SpringBootServletInitializer {
 	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder stockapp) {
-		return stockapp.sources(stock_application.class).properties("spring.config.name: application.stock)");
+		return stockapp.sources(StockApplication.class).properties("spring.config.name: application.stock)");
 	}
 
 	public static void main(String[] args) {
 		System.setProperty("spring.config.name", "application.stock");
-		SpringApplication.run(stock_application.class, args);
+		SpringApplication.run(StockApplication.class, args);
 	}
 
 }
