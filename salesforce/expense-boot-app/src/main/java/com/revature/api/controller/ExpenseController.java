@@ -26,7 +26,7 @@ import com.revature.api.service.ExpenseService;
  *
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/expense")
 public class ExpenseController {
 	
 	private static final String AMOUNT = "amount";
@@ -34,6 +34,7 @@ public class ExpenseController {
 	@Autowired
 	ExpenseService expenseService;
 
+	private DecimalFormat df = new DecimalFormat("0.00");
 	HttpServletResponse response;
 
 	/**
@@ -83,11 +84,9 @@ public class ExpenseController {
 	 */
 	@GetMapping("/{organization}")
 	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
-
-			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
-			throws IOException {
-		String start = startDate.orElse(null);
-		String end = endDate.orElse(null);
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
 		List<Expense> list = expenseService.findByOrganization(organization, start, end);
 		Collections.sort(list);
 		return list;
@@ -103,13 +102,10 @@ public class ExpenseController {
 	 */
 	@GetMapping("/{organization}/summary")
 	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
-
-			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate)
-			throws IOException {
-		String start = startDate.orElse(null);
-		String end = endDate.orElse(null);
-		List<ExpenseAbrev> list = expenseService.findSummaryByOrganization(organization, start, end);
-		return list;
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
+		return expenseService.findSummaryByOrganization(organization, start, end);
 	}
 
 	/**
@@ -141,8 +137,8 @@ public class ExpenseController {
 	public List<Expense> getExpenseByDescription(@PathVariable("organization") String organization,
 			@PathVariable("description") String description, @RequestParam("start") Optional<String> startDate,
 			@RequestParam("end") Optional<String> endDate) {
-		String start = startDate.orElse(null);
-		String end = endDate.orElse(null);
+		String start = startDate.isPresent() ? startDate.get() : null;
+		String end = endDate.isPresent() ? endDate.get() : null;
 		return expenseService.findByOrganizationAndDescription(organization, description, start, end);
 	}
 
