@@ -85,9 +85,7 @@ public class ExpenseController {
 	@GetMapping("/{organization}")
 	public List<Expense> getByOrganization(@PathVariable("organization") String organization,
 			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
-		List<Expense> list = expenseService.findByOrganization(organization, start, end);
+		List<Expense> list = expenseService.findByOrganization(organization, startDate.orElse(null), endDate.orElse(null));
 		Collections.sort(list);
 		return list;
 	}
@@ -103,9 +101,7 @@ public class ExpenseController {
 	@GetMapping("/{organization}/summary")
 	public List<ExpenseAbrev> getByOrganizationSummary(@PathVariable("organization") String organization,
 			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate){
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
-		return expenseService.findSummaryByOrganization(organization, start, end);
+		return expenseService.findSummaryByOrganization(organization, startDate.orElse(null), endDate.orElse(null));
 	}
 
 	/**
@@ -137,9 +133,7 @@ public class ExpenseController {
 	public List<Expense> getExpenseByDescription(@PathVariable("organization") String organization,
 			@PathVariable("description") String description, @RequestParam("start") Optional<String> startDate,
 			@RequestParam("end") Optional<String> endDate) {
-		String start = startDate.isPresent() ? startDate.get() : null;
-		String end = endDate.isPresent() ? endDate.get() : null;
-		return expenseService.findByOrganizationAndDescription(organization, description, start, end);
+		return expenseService.findByOrganizationAndDescription(organization, description, startDate.orElse(null), endDate.orElse(null));
 	}
 
 	/**
