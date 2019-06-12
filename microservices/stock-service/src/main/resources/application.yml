@@ -10,6 +10,6 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: https://financeplanning.herokuapp.com/eureka
+      defaultZone: http://ec2-3-16-161-166.us-east-2.compute.amazonaws.com:8761/eureka
     
       
