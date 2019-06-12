@@ -40,6 +40,8 @@
 			<groupId>com.sforce</groupId>
 			<artifactId>userloginrecord</artifactId>
 			<version>0.0.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/userloginrecord-0.0.0.jar</systemPath>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
