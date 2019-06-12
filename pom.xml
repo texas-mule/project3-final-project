@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -6,7 +6,6 @@
 	<artifactId>project3-mule</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-
 	<name>project3-mule</name>
 
     <properties>
@@ -136,6 +135,7 @@
 		</profile>
 	</profiles>
 	<dependencies>
+
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -164,6 +164,7 @@
 
 	<repositories>
           <repository>
+
             <id>anypoint-exchange</id>
             <name>Anypoint Exchange</name>
             <url>https://maven.anypoint.mulesoft.com/api/v1/maven</url>
@@ -176,6 +177,7 @@
             <layout>default</layout>
         </repository>
     </repositories>
+    
     <pluginRepositories>
         <pluginRepository>
             <id>mulesoft-releases</id>
@@ -187,5 +189,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 </project>
