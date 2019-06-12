@@ -1,45 +1,141 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mycompany</groupId>
-    <artifactId>project3-mule</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.mycompany</groupId>
+	<artifactId>project3-mule</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-    <name>project3-mule</name>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <beanstalk.versionLabel>${maven.build.timestamp}</beanstalk.versionLabel>
-        <app.runtime>4.2.0</app.runtime>
-        <mule.maven.plugin.version>3.2.7</mule.maven.plugin.version>
-        
-        <cloudhub.username>${cloudhubusername}</cloudhub.username>
-        <cloudhub.password>${cloudhubpassword}</cloudhub.password>
-    </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.mule.tools.maven</groupId>
-                <artifactId>mule-maven-plugin</artifactId>
-                <version>${mule.maven.plugin.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <classifier>mule-application</classifier>
-                    <cloudHubDeployment>
-                        <uri>${uri}</uri>
-                        <muleVersion>${app.runtime}</muleVersion>
-                        <username>${username}</username>
-                        <password>${password}</password>
-                        <applicationName>${project.artifactId}</applicationName>
-                        <environment>${environment}</environment>
-                    </cloudHubDeployment>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
-    <dependencies>
+	<name>project3-mule</name>
+
+    <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<app.runtime>4.2.0</app.runtime>
+		<mule.maven.plugin.version>3.2.7</mule.maven.plugin.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mule.tools.maven</groupId>
+				<artifactId>mule-maven-plugin</artifactId>
+				<version>${mule.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+				<classifier>mule-application</classifier>
+				<copyToAppsDirectory>true</copyToAppsDirectory>									
+                </configuration>
+			</plugin>
+		   <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-resource</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>add-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/main/mule/</directory>
+								</resource>
+								<resource>
+									<directory>src/main/api/</directory>
+								</resource>
+								<resource>
+									<directory>mappings/</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+ <profiles>
+		<profile>
+			<id>sandbox</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.mule.tools.maven</groupId>
+						<artifactId>mule-maven-plugin</artifactId>
+						<version>${mule.maven.plugin.version}</version>
+						<configuration>
+							<deploymentType>cloudhub</deploymentType>
+							<muleVersion>${app.runtime}</muleVersion>
+							<username>${uid}</username>
+							<password>${pwd}</password>
+							<workerType>Micro</workerType>
+							<applicationName>mule-application</applicationName>
+							<redeploy>true</redeploy>
+							<environment>Sandbox</environment>
+						</configuration>
+						<executions>
+							<execution>
+								<id>deploy</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.mule.tools.maven</groupId>
+						<artifactId>mule-app-maven-plugin</artifactId>
+						<version>${mule.maven.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<copyToAppsDirectory>true</copyToAppsDirectory>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<id>add-resource</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>add-resource</goal>
+								</goals>
+								<configuration>
+									<resources>
+										<resource>
+											<directory>src/main/mule/</directory>
+										</resource>
+										<resource>
+											<directory>src/main/api/</directory>
+										</resource>
+										<resource>
+											<directory>mappings/</directory>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<dependencies>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -52,20 +148,104 @@
             <version>1.1.5</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-        <dependency>
+		<dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-email-connector</artifactId>
             <version>1.1.3</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-        <dependency>
+							
+			  
+										  
+										
+									
+						  
+			   
+							
+			  
+												  
+														
+									
+						  
+			   
+						  
+			  
+										 
+											   
+									
+						  
+			   
+			  
+										 
+											   
+									
+						  
+			   
+			  
+													 
+												  
+									
+						  
+			   
+			  
+													 
+												 
+									
+						  
+			   
+			  
+										 
+											 
+									
+						  
+			   
+					   
+			  
+									  
+												 
+									
+						  
+			   
+			  
+									  
+										   
+									
+						  
+			   
+					  
+			  
+									
+												 
+									
+					  
+			   
+			  
+									  
+											
+									
+						  
+			   
+			  
+									  
+													 
+									
+						  
+			   
+			 
+											   
+														   
+											 
+								   
+					 
+    	<dependency>
             <groupId>com.mulesoft.modules</groupId>
             <artifactId>mule-secure-configuration-property-module</artifactId>
             <version>1.0.2</version>
             <classifier>mule-plugin</classifier>
         </dependency>
     </dependencies>
-    <repositories>
+
+	<repositories>
           <repository>
             <id>anypoint-exchange</id>
             <name>Anypoint Exchange</name>
@@ -89,56 +269,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
-        <pluginRepository>
-            <id>mule-public</id>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
-        </pluginRepository>
     </pluginRepositories>
-    <profiles>
-        <profile>
-          <id>cloudhub</id>
-          <build>
-            <plugins>
-              <plugin>
-                <groupId>br.com.ingenieux</groupId>
-                <artifactId>beanstalk-maven-plugin</artifactId>
-                <version>1.5.3</version>
-                <configuration>
-                  <applicationName>DevCluster</applicationName>
-                  <environmentName>Devcluster-env</environmentName>
-                  <s3Bucket>mydevopstesting</s3Bucket>
-                  <s3Key>${project.artifactId}/${project.build.fialName}-${maven.build.timestamp}.war</s3Key>
-                  <!-- will save as s3://[bucket name]/[artifactId]/artifactId-version-TIMESTAMP.war -->
-                </configuration>
-              </plugin>
-              <plugin>
-                <groupId>org.mule.tools.maven</groupId>
-                <artifactId>mule-maven-plugin</artifactId>
-                <configuration>
-                  <deploymentType>cloudhub</deploymentType>
-                  <muleVersion>${mule.version}</muleVersion> 
-                  <username>${anypoint.username}</username> 
-                  <password>${anypoint.password}</password> 
-                  <applicationName>${artifactId}</applicationName>
-                  <environment>${cloundhub.env}</environment> 
-                  <businessGroup>${anypoint.businessGroup}</businessGroup>
-                  <region>${cloudhub.region}</region>
-                  <uri>${anypoint.uri}</uri> 
-                  <workerType>${cloudhub.workerType}</workerType>
-                  <workers>${cloudhub.workers}</workers>
-                </configuration>
-                <executions>
-                  <execution>
-                    <id>deploy</id>
-                    <phase>deploy</phase>
-                    <goals>
-                      <goal>deploy</goal>
-                    </goals>
-                  </execution>
-                </executions>
-              </plugin>
-            </plugins>
-          </build>
-        </profile>
-    </profiles>
+
 </project>
