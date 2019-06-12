@@ -37,6 +37,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<http:request-config name="StockConfiguration" doc:name="HTTP Request configuration" doc:id="43d0ed5e-2613-46d0-8b5e-8a31db3a9f6c" basePath="/stock" >
 		<http:request-connection host="${stock.url}" />
 	</http:request-config>
+
 	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" >
 		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice/{departmentid}" doc:description="Flow that sends out an Invoice in an email
 
@@ -52,6 +53,7 @@ Requires:
 
 Requires:
 {email}				query param		sets email destination
+
 {departmentid}	uri param			sets department destination">
 			<email:to-addresses>
 				<email:to-address value="#[attributes.queryParams.email]" />
@@ -61,7 +63,7 @@ Requires:
 
 			</email:body>
 		</email:send>
-	
+
 </flow>
 	<flow name="loadIndexPage" doc:id="26ce383e-bd96-4b61-a9f4-a24a382fc2f8" >
 		<http:listener doc:name="load index.html" doc:id="93b17725-3db4-4b2b-826c-67c82d200452" config-ref="HTTP_Listener_config" path="/test"/>
