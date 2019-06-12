@@ -1,0 +1,79 @@
+#%RAML 1.0
+title: Stock
+/stock:
+  post:
+    description: Add a stock
+    body:
+      application/json:
+        example: |
+          {
+            "tickerSymbol": "AAPL",
+            "name": "Apple Inc.",
+            "stockPrice": 800.00,
+            "sharesOwned": 100.00
+          }
+    responses:
+      201:
+  /{organization}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                [
+                  {
+                    "tickerSymbol": "AAPL",
+                    "name": "Apple Inc.",
+                    "stockPrice": 800.00,
+                    "sharesOwned": 100.00
+                  },
+                  {
+                    "tickerSymbol": "GOG",
+                    "name": "oo",
+                    "stockPrice": 750.00,
+                    "sharesOwned": 95.00
+                  },
+                  {
+                    "tickerSymbol": "AAPL",
+                    "name": "Apple Inc.",
+                    "stockPrice": 900.00,
+                    "sharesOwned": 120.00
+                  },
+                  {
+                    "tickerSymbol": "AAPL",
+                    "name": "Apple Inc.",
+                    "stockPrice": 820.00,
+                    "sharesOwned": 110.00
+                  }
+                ]
+    /{organization}/{tickersymbol}:
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                    {
+                      "tickerSymbol": "AAPL",
+                      "name": "Apple Inc.",
+                      "stockPrice": 800.00,
+                      "sharesOwned": 100.00
+                    }
+      put:
+        description: overwrite a stock
+        body:
+          application/json:
+            example: |
+              {
+                "tickerSymbol": "AAPL",
+                "name": "Apple Inc.",
+                "stockPrice": 800.00,
+                "sharesOwned": 100.00
+              }
+        responses:
+          200:     
+      delete:
+        description: delete a stock
+        responses:
+          204:
