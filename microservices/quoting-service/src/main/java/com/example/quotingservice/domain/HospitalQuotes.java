@@ -2,19 +2,31 @@ package com.example.quotingservice.domain;
 
 import java.util.HashMap;
 
-public class HospitalQuotes extends Quotes {
-	private double quote;
-	private HashMap<String, Double> equipment=new HashMap<String, Double>();
-	public HospitalQuotes(Integer id, String org_name, double budget, double funds, String stock) {
-		super(id, org_name, budget, funds, stock);
-		equipment.put("Xray", (double)4700000);
-		equipment.put("UltraSound", (double)3000000);
-		equipment.put("ScreeningUnit", (double)12000000);
-		equipment.put("AnaestheticMachine", (double)2650991);
-		equipment.put("Vital", (double)500000);
+public class HospitalQuotes  {
+	private Long quote;
+	private HashMap<String, Long> equipment=new HashMap<String, Long>();
+	public HospitalQuotes() {
+		
+		equipment.put("Xray",  (long) 4700000);
+		equipment.put("UltraSound", (long)3000000.00);
+		equipment.put("ScreeningUnit", (long)12000000.00);
+		equipment.put("AnaestheticMachine", (long)2650991.00);
+		equipment.put("Vital", (long)500000.00);
 	}
-	public double getEquipmentQuote(String equipmentType,int count){
-		double equip;
+	public Long getQuote() {
+		return quote;
+	}
+	public void setQuote(Long quote) {
+		this.quote = quote;
+	}
+	public HashMap<String, Long> getEquipment() {
+		return equipment;
+	}
+	public void setEquipment(HashMap<String, Long> equipment) {
+		this.equipment = equipment;
+	}
+	public Long getEquipmentQuote(String equipmentType,int count){
+		Long equip;
 		equip=equipment.get(equipmentType);
 		quote=equip*count;
 		return quote;

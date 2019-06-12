@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.quotingservice.consume.SalesForce;
 import com.example.quotingservice.domain.*;
 @RestController
 @RequestMapping("/quote-service")
@@ -54,18 +55,33 @@ public class QuotesController{
 		double temp=policeQuotes.getLaborQuote(count);
 		HashMap<String,Double> hashmap=new HashMap<String,Double>();
 		hashmap.put("new Police Hire",temp);
+		
 		return hashmap;
 		
 	}
-	@GetMapping("newhire/fire/itemized")
+	@GetMapping("itemized/newhire/fire")
 	public HashMap<String,Double> fitemizedHire(){
 		FireQuote fireQuote=new FireQuote();
 		return fireQuote.getEquipment();
 	}
-	@GetMapping("newhire/law-enforcement/itemized")
+	@GetMapping("itemized/newhire/law-enforcement")
 	public HashMap<String,Double> pitemizedHire(){
 		PoliceQuotes policeQuotes=new PoliceQuotes();
 		return policeQuotes.getHashmap();
+	}
+	@GetMapping("hospital/supplies")
+	public HospitalQuotes itemized(){
+		HospitalQuotes hospitalQuote=new HospitalQuotes();
+		return hospitalQuote;
+	}
+	
+	@GetMapping("Equipment/hospital/{item}/{count}")
+	public HashMap<String,Long> equipmentcost(@PathVariable("item") String item,@PathVariable("count") int count){
+		HashMap<String,Long> hashMap=new HashMap<String, Long>();
+		HospitalQuotes hospitalQuote=new HospitalQuotes();
+		Long temp= hospitalQuote.getEquipmentQuote(item, count);
+		hashMap.put(item, temp);
+		return hashMap;
 	}
 		
 	
