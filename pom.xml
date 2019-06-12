@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mycompany</groupId>
     <artifactId>project3-mule</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-application</packaging>
-    <name>project3-mule</name>
+    <name>mule-city-comptroller</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -17,8 +18,14 @@
         <cloudhub.username>${cloudhubusername}</cloudhub.username>
         <cloudhub.password>${cloudhubpassword}</cloudhub.password>
     </properties>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
@@ -38,7 +45,14 @@
             </plugin>
         </plugins>
     </build>
-
+    
+    <modules>
+        <module>salesforce/pom.xml</module>
+        <module>devops/pom.xml</module>
+        <module>microservices/pom.xml</module>
+        <module>mule/pom.xml</module>
+    </modules>
+    
     <dependencies>
         <dependency>
             <groupId>org.mule.connectors</groupId>
@@ -66,7 +80,7 @@
         </dependency>
     </dependencies>
     <repositories>
-          <repository>
+        <repository>
             <id>anypoint-exchange</id>
             <name>Anypoint Exchange</name>
             <url>https://maven.anypoint.mulesoft.com/api/v1/maven</url>
@@ -79,6 +93,7 @@
             <layout>default</layout>
         </repository>
     </repositories>
+    
     <pluginRepositories>
         <pluginRepository>
             <id>mulesoft-releases</id>
@@ -94,51 +109,52 @@
             <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
         </pluginRepository>
     </pluginRepositories>
+
     <profiles>
         <profile>
-          <id>cloudhub</id>
-          <build>
-            <plugins>
-              <plugin>
-                <groupId>br.com.ingenieux</groupId>
-                <artifactId>beanstalk-maven-plugin</artifactId>
-                <version>1.5.3</version>
-                <configuration>
-                  <applicationName>DevCluster</applicationName>
-                  <environmentName>Devcluster-env</environmentName>
-                  <s3Bucket>mydevopstesting</s3Bucket>
-                  <s3Key>${project.artifactId}/${project.build.fialName}-${maven.build.timestamp}.war</s3Key>
-                  <!-- will save as s3://[bucket name]/[artifactId]/artifactId-version-TIMESTAMP.war -->
-                </configuration>
-              </plugin>
-              <plugin>
-                <groupId>org.mule.tools.maven</groupId>
-                <artifactId>mule-maven-plugin</artifactId>
-                <configuration>
-                  <deploymentType>cloudhub</deploymentType>
-                  <muleVersion>${mule.version}</muleVersion> 
-                  <username>${anypoint.username}</username> 
-                  <password>${anypoint.password}</password> 
-                  <applicationName>${artifactId}</applicationName>
-                  <environment>${cloundhub.env}</environment> 
-                  <businessGroup>${anypoint.businessGroup}</businessGroup>
-                  <region>${cloudhub.region}</region>
-                  <uri>${anypoint.uri}</uri> 
-                  <workerType>${cloudhub.workerType}</workerType>
-                  <workers>${cloudhub.workers}</workers>
-                </configuration>
-                <executions>
-                  <execution>
-                    <id>deploy</id>
-                    <phase>deploy</phase>
-                    <goals>
-                      <goal>deploy</goal>
-                    </goals>
-                  </execution>
-                </executions>
-              </plugin>
-            </plugins>
-          </build>
+            <id>cloudhub</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>br.com.ingenieux</groupId>
+                        <artifactId>beanstalk-maven-plugin</artifactId>
+                        <version>1.5.3</version>
+                        <configuration>
+                            <applicationName>DevCluster</applicationName>
+                            <environmentName>Devcluster-env</environmentName>
+                            <s3Bucket>mydevopstesting</s3Bucket>
+                            <s3Key>${project.artifactId}/${project.build.fialName}-${maven.build.timestamp}.war</s3Key>
+                            <!-- will save as s3://[bucket name]/[artifactId]/artifactId-version-TIMESTAMP.war -->
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.mule.tools.maven</groupId>
+                        <artifactId>mule-maven-plugin</artifactId>
+                        <configuration>
+                            <deploymentType>cloudhub</deploymentType>
+                            <muleVersion>${mule.version}</muleVersion>
+                            <username>${anypoint.username}</username>
+                            <password>${anypoint.password}</password>
+                            <applicationName>${artifactId}</applicationName>
+                            <environment>${cloundhub.env}</environment>
+                            <businessGroup>${anypoint.businessGroup}</businessGroup>
+                            <region>${cloudhub.region}</region>
+                            <uri>${anypoint.uri}</uri>
+                            <workerType>${cloudhub.workerType}</workerType>
+                            <workers>${cloudhub.workers}</workers>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

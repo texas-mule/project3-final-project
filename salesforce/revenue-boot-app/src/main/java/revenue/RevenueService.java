@@ -20,8 +20,11 @@ public class RevenueService {
 
 	public List<RevenueDomain> SelectAll(String organization, String start, String end) {
 		List<Object> args = new LinkedList<Object>();
-		args.add(organization);
-		String sqlquery = "select * from revenue where name = ?";
+		String sqlquery = "select * from revenue where true";
+		if (organization != null) {
+			sqlquery += " and name = ?";
+			args.add(organization);
+		}
 		if (start != null) {
 			try {
 				Date startDate = Date.valueOf(start);
@@ -68,4 +71,15 @@ public class RevenueService {
 		return temp.query("select * from revenue where funds < ?", args, revenueMapper);
 	}
 
+	public void deleteByID(int ID) {
+		Object[] args = { ID };
+		temp.update("delete from revenue where ID = ?", args);
+	}
+
+	public void overwriteById(int id, String name, float cost, String date, String item) {
+		Object[] args = { name, cost, item, Date.valueOf(date), id };
+		temp.update("update revenue set name = ?, funds = ?, description = ?, date = ? where id = ?", args);
+	}
+
 }
+
