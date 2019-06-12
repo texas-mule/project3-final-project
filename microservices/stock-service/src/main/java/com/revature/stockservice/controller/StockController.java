@@ -24,8 +24,8 @@ public class StockController {
 		return stockService.getStockPrice(symbol);
 	}
 	
-	@GetMapping("/aggregate/{organization}")
-	public HashMap<String, Department> aggregatePortfolio(@PathVariable("organization") final String organization){
+	@GetMapping("/aggregate/{department}")
+	public HashMap<String, Department> aggregatePortfolio(@PathVariable("department") final String organization){
 	
 		return stockService.aggregateOrgStock(organization);
 	}

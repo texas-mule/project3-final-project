@@ -2,11 +2,10 @@ package com.example.quotingservice.domain;
 
 import java.util.HashMap;
 
-public class PoliceQuotes extends Quotes {
+public class PoliceQuotes  {
 private double quote;
 	private HashMap<String, Double> hashmap=new HashMap<String, Double>();
-	public PoliceQuotes(Integer id, String org_name, double budget, double funds, String stock) {
-		super(id, org_name, budget, funds, stock);
+	public PoliceQuotes(){
 		hashmap.put("fullUniform",(double) 1500);
 		hashmap.put("boots",(double) 200);
 		hashmap.put("salary",(double) 45000);
@@ -30,10 +29,22 @@ private double quote;
 	//yearly salary for each cop
 	public double getLaborQuote(int newOfficers){
 		double equipment;
-		equipment=hashmap.get("salary")+hashmap.get("FullUniform");
+		equipment=hashmap.get("salary")+hashmap.get("fullUniform");
 		return equipment*newOfficers;
 		
 		
+	}
+	public double getQuote() {
+		return quote;
+	}
+	public void setQuote(double quote) {
+		this.quote = quote;
+	}
+	public HashMap<String, Double> getHashmap() {
+		return hashmap;
+	}
+	public void setHashmap(HashMap<String, Double> hashmap) {
+		this.hashmap = hashmap;
 	}
 
 }
