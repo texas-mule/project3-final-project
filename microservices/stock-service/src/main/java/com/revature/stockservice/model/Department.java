@@ -3,8 +3,7 @@ package com.revature.stockservice.model;
 import java.util.List;
 
 public class Department {
-	
-	private String name;
+
 	private double totalProfit;
 	private List<Stock> stockList;
 	
@@ -24,5 +23,5 @@ public class Department {
 	}
 	public void setStockList(List<Stock> stockList) {
 		this.stockList = stockList;
-	}	
+	}
 }
