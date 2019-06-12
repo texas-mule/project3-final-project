@@ -17,10 +17,26 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	        </tls:context>
 		</email:smtps-connection>
 	</email:smtp-config>
+	<configuration-properties file="application.properties"/>
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="86051baa-7a0f-47e9-a92a-cc44bb1e6c5d" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="24c85e9e-14fe-4eab-9e2f-0417c4575a91" file="config.yaml" key="emailpassword" />
+	<http:request-config name="SalesforceAuthConnection" doc:name="HTTP Request configuration" doc:id="56cbf6f2-3ee4-4552-aab9-d59d3e4772bd" basePath="/auth" >
+		<http:request-connection host="${authentication.url}" port="80" />
+	</http:request-config>
+	<http:request-config name="ExpenseConnection" doc:name="HTTP Request configuration" doc:id="71f9c491-f06c-454c-b3f2-c8f77aad0c37" >
+		<http:request-connection host="expensecity-env.dfhpkbxgyn.us-east-2.elasticbeanstalk.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7137f0f1-3071-446f-9c27-f16d00789568" basePath="/eureka/total" >
+		<http:request-connection host="ec2-3-16-161-166.us-east-2.compute.amazonaws.com:8761" />
+	</http:request-config>
+	<http:request-config name="RevenueConnection" doc:name="HTTP Request configuration" doc:id="a8f274e5-cab2-4248-92df-8984aa80d117" basePath="/revenue" >
+		<http:request-connection host="${revenue.url}" />
+	</http:request-config>
+	<http:request-config name="StockConfiguration" doc:name="HTTP Request configuration" doc:id="43d0ed5e-2613-46d0-8b5e-8a31db3a9f6c" basePath="/stock" >
+		<http:request-connection host="${stock.url}" />
+	</http:request-config>
 	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" >
 		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice/{departmentid}" doc:description="Flow that sends out an Invoice in an email
 
@@ -30,7 +46,7 @@ Requires:
 " allowedMethods="GET" outputMimeType="application/json"/>
 		<set-variable value="" doc:name="Create outputemail" doc:id="de821f4d-0bc8-4158-8675-ea2a2e1a97c9" variableName="outputemail"/>
 		<set-variable value="#[attributes.uriParams.departmentid]" doc:name="Set Department ID" doc:id="399f58d7-a9b7-4988-a598-d27fe9158ffe" variableName="departmentid"/>
-		<parse-template doc:name="Set email.html to outputemail" doc:id="21fcf65a-759f-4560-9528-deb5e6f0a022" location="C:\Users\RCP\git\project3-final-project\mule\src\main\resources\email.html" target="outputemail"/>
+		<parse-template doc:name="Set email.html to outputemail" doc:id="21fcf65a-759f-4560-9528-deb5e6f0a022" location="email.html" target="outputemail"/>
 		<logger level="INFO" doc:name="Log Email Payload" doc:id="4ac71acd-af96-4016-a0d2-5afe32d961bc" message="#[payload]"/>
 		<email:send doc:name="Send Email" doc:id="64bf4df8-d253-4805-89e2-681a14c48054" config-ref="Email_SMTP" fromAddress="tmfieldtrip@gmail.com" subject="Texas Mule - Invoice" doc:description="Connector that sends an invoice to an email address
 
@@ -47,5 +63,208 @@ Requires:
 		</email:send>
 	
 </flow>
+	<flow name="loadIndexPage" doc:id="26ce383e-bd96-4b61-a9f4-a24a382fc2f8" >
+		<http:listener doc:name="load index.html" doc:id="93b17725-3db4-4b2b-826c-67c82d200452" config-ref="HTTP_Listener_config" path="/test"/>
+		<parse-template doc:name="parse index.html" doc:id="00d53edf-a3ac-4ca7-9afd-459871e75da0" location="Login\index.html"/>
+	</flow>
+	<flow name="loadbootstrapmincss" doc:id="9e2f3931-1580-46e5-8875-772bbde66f12">
+		<http:listener doc:name="load bootstrap.min.css" doc:id="9ceafb64-84b4-4903-88d8-6cea469a8525" config-ref="HTTP_Listener_config" path="/vendor/bootstrap/css/bootstrap.min.css" />
+		<parse-template doc:name="parse bootstrap.min.css" doc:id="e9f48d1b-eb32-48e0-b80c-ec9baa30592b" location="Login/vendor/bootstrap/css/bootstrap.min.css" />
+	</flow>
+	<flow name="loadutilcss" doc:id="cc3a818d-5652-422a-bc50-21ca3bb238af">
+		<http:listener doc:name="load utilcss" doc:id="49519025-fe2d-4c04-bb0c-f5b43d2537cd" config-ref="HTTP_Listener_config" path="/css/util.css" />
+		<parse-template doc:name="parse utilcss" doc:id="20252873-431e-4485-92f6-3ea8225c0da7" location="Login/css/util.css" />
+	</flow>
+	<flow name="loadmaincss" doc:id="406fe907-b44c-40e3-934a-fb11ab2e8e8c">
+		<http:listener doc:name="load main.css" doc:id="7ac4a1ee-7c18-4f91-82db-3111318c65b9" config-ref="HTTP_Listener_config" path="/css/main.css" />
+		<parse-template doc:name="parse main.css" doc:id="3268d7fa-7e20-4d93-b852-524e611b4789" location="Login/css/main.css" />
+	</flow>
+	<flow name="loadmainjs" doc:id="fe93fb1b-c25a-45d9-947f-158a952fa1b3">
+		<http:listener doc:name="load main.js" doc:id="b8fc185d-c9f9-456c-83b5-badce2590e13" config-ref="HTTP_Listener_config" path="/js/main.js" />
+		<parse-template doc:name="parse main.js" doc:id="3413ff60-dd0f-47aa-a292-663d8187400e" location="Login/js/main.js" />
+	</flow>
+	<flow name="loadbootstrapjs" doc:id="c804b40f-0920-4103-b866-ef62a0577ea6">
+		<http:listener doc:name="load bootstrap.min.js" doc:id="dea812a7-3047-4d6d-a9c8-f5c3908b8463" config-ref="HTTP_Listener_config" path="/vendor/bootstrap/js/bootstrap.min.js" />
+		<parse-template doc:name="parse bootstrap.min.js" doc:id="42342cd8-1460-4fbc-955e-5c925b967434" location="Login/vendor/bootstrap/js/bootstrap.min.js" />
+	</flow>
+	<flow name="login" doc:id="7aee3898-9ad1-4e9f-9a35-ca5218f24174" >
+		<http:listener doc:name="/login/{username}/{password}" doc:id="1dbc2377-b214-4ea8-9395-0f8d6ce97abf" config-ref="HTTP_Listener_config" path="/login/{username}/{password}"/>
+		<http:request method="POST" doc:name="Attempt Login to Salesforce" doc:id="62594515-3e3e-4a4b-a798-3e7bce56a358" path="/login" config-ref="SalesforceAuthConnection">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"username" : attributes.uriParams.username,
+	"password" : attributes.uriParams.password
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="delete:\expense\(organization)\(id):expense-config">
+        <http:listener doc:name="delete:/expense/organization/(organization)/id/(id)" doc:id="03a54b23-2d68-4f9f-8728-dc15e7f329e3" config-ref="HTTP_Listener_config" path="/expense/organization/{organization/id/{id}" allowedMethods="DELETE" />
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="42cd1ed4-a0d5-48ad-a140-7182aa8e0df0" doc:name="Parse organization and id">
+            <ee:variables>
+                <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+                <ee:set-variable variableName="id"><![CDATA[attributes.uriParams.id]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<http:request method="DELETE" doc:name="Request" doc:id="bbd34ddd-3cd4-4452-b469-a6b5c97b1fb7" path="/{organization}/id/{id}" config-ref="ExpenseConnection">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization,
+	"id" : vars.id
+}]]]></http:uri-params>
+		</http:request>
+    
+</flow>
+	<flow name="get:\expense\(organization)\summary:expense-config">
+        <http:listener doc:name="Listener" doc:id="83e0ed97-857e-43a5-a237-51d2a5995d64" config-ref="HTTP_Listener_config" path="/finances/summary/{organization}"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="2d6c2a22-5187-4e1b-9292-9090826eedde">
+            <ee:variables>
+                <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start]]></ee:set-variable>
+				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
+            
+</ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="f8b753bb-a97f-4b10-aa2b-77f09a88536c">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    name: "Fire Department",
+    amount: 120.00,
+    description: "pencil",
+    quantity: 90
+  }, 
+  {
+    name: "Fire Department",
+    amount: 85.00,
+    description: "Ladder Truck",
+    quantity: 1
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="a3948d0b-4123-4418-ba11-7abb77811a8f" config-ref="ExpenseConnection" path="/expense/{organization}/summary">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"Start Date" : vars.start,
+	"End Date" : vars.end
+}]]]></http:query-params>
+		</http:request>
+    
+</flow>
+	<flow name="MS-Total\finances\(organization)">
+        <http:listener doc:name="Listener" doc:id="58836feb-551a-41ec-9ef2-29917c9423a6" config-ref="HTTP_Listener_config" path="/finances/{organization}"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="1c0e9381-7f77-4883-961e-a3026104555f">
+            <ee:variables>
+                <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start]]></ee:set-variable>
+				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
+            
+</ee:variables>
+        </ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="ff7231e4-6183-4a77-a6eb-c4c01ae8a94c" config-ref="HTTP_Request_configuration" path="/expenses/{organization}/{start}/{end}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization,
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
+    
+</flow>
+	<flow name="SALESFORCE-revenue\finances\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
+		<http:listener doc:name="/financessalesforce/{organization}" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="105fea0d-d4ce-4483-98d9-71cedffa4635" message="/financessalesforce/{organization}"/>
+		<ee:transform doc:name="Transform Message" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start]]></ee:set-variable>
+				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="f09731a4-daf4-442e-b1dd-3725f46fffc4" config-ref="RevenueConnection" path="/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="f865256a-06ce-441b-942c-ef93cbba9520" />
+	</flow>
+	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" >
+		<http:listener doc:name="getAssetsByOrganization" doc:id="c864561c-8ceb-4f64-b406-4022b87e9293" config-ref="HTTP_Listener_config" path="/assets/{organization}"/>
+		<ee:transform doc:name="Transform Message" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e1957d6e-79aa-4920-bfc5-a2d3fdab9a1e" />
+		<http:request method="GET" doc:name="Get Assets from Salesforce" doc:id="d233f571-8538-4553-a6a4-7026b224d252" config-ref="RevenueConnection" path="/name/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="2b1418f4-05a4-4eba-ab5a-1bfda6e3e9ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	assets: payload.item
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" >
+		<http:listener doc:name="grabStockExpenses" doc:id="50293c85-4600-4819-9833-08a70fad463f" config-ref="HTTP_Listener_config" path="/stock/{organization}/expense"/>
+		<ee:transform doc:name="Transform Message" doc:id="e29db558-536c-44a2-8d00-37a0b0a20f33" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="StockConfiguration" path="/{organization}" outputMimeType="application/json">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="cd490054-664a-48d2-89d7-498e1e9f57b1" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8eb9266f-2387-466e-b238-0b77ab170204" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	stockvalues: payload.amountSpent
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 
 </mule>
