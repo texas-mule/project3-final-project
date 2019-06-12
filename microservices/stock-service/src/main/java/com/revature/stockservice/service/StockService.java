@@ -65,26 +65,26 @@ public class StockService {
 		    	if(obj.has("companyName")) {
 		    		name = obj.getString("companyName");
 	    		}
-		    
-		    	if(obj.has("tickerSymbol")) {
-		    		symbol = obj.getString("tickerSymbol");
-	    		}
-	    		
-	    		if(obj.has("shares")) {
+		    	
+		    	if(obj.has("shares")) {
 	    			shares = obj.getDouble("shares");
 	    		}
 	    		
 	    		if(obj.has("amountSpent")) {
 	    			amountSpent = obj.getDouble("amountSpent");
 	    		}
-	    		currentPrice = obj.getDouble("price");
-//	    		JSONObject stockPrice_obj = new JSONObject(this.getStockPrice(symbol));
-	    		
-//	    		if(stockPrice_obj.has("price")) {
-//	    			currentPrice = stockPrice_obj.getDouble("price");
-//	    		}
-//	            
-	            double profits = this.profitCalculator(shares, amountSpent, currentPrice);
+		    
+		    	if(obj.has("tickerSymbol")) {
+		    		
+		    		symbol = obj.getString("tickerSymbol");
+		    		JSONObject stockPrice_obj = new JSONObject(this.getStockPrice(symbol));
+		    		
+		    		if(stockPrice_obj.has("price")) {
+			    			currentPrice = stockPrice_obj.getDouble("price");	    		
+			    	}
+	    		}
+	    			            
+	        	double profits = this.profitCalculator(shares, amountSpent, currentPrice);
 	            profitOrLoss = profitOrLoss + profits;
 	            
 	            stock.add(new Stock(symbol, name, amountSpent, shares, currentPrice, profits));
