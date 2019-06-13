@@ -1,0 +1,100 @@
+#%RAML 1.0
+title: Stock
+/stock:
+  post:
+    description: Add a stock
+    body:
+      application/json:
+        example: |
+          {
+            "organizationName": "Fire Department",
+            "tickerSymbol": "TTWO",
+            "companyName": "Take-Two Interactive Software Inc.",
+            "amountSpent": 800,
+            "shares": 7.1652
+          }
+    responses:
+      201:
+  /{organization}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                [
+                    {
+                        "shares": 151.5152,
+                        "organizationName": "Fire Department",
+                        "companyName": "II-VI Inc.",
+                        "tickerSymbol": "IIVI",
+                        "amountSpent": 5000
+                    },
+                    {
+                        "shares": 114.3903,
+                        "organizationName": "Fire Department",
+                        "companyName": "Uber Technologies Inc.",
+                        "tickerSymbol": "UBER",
+                        "amountSpent": 5000
+                    },
+                    {
+                        "shares": 355.8719,
+                        "organizationName": "Fire Department",
+                        "companyName": "Vanda Pharmaceuticals Inc.",
+                        "tickerSymbol": "VNDA",
+                        "amountSpent": 5000
+                    },
+                    {
+                        "shares": 231.696,
+                        "organizationName": "Fire Department",
+                        "companyName": "Funko Inc. Cl A",
+                        "tickerSymbol": "FNKO",
+                        "amountSpent": 5000
+                    },
+                    {
+                        "shares": 223.6136,
+                        "organizationName": "Fire Department",
+                        "companyName": "VanEck Vectors Brazil Small-Cap ETF",
+                        "tickerSymbol": "BRF",
+                        "amountSpent": 5000
+                    },
+                    {
+                        "shares": 7142857.1429,
+                        "organizationName": "Fire Department",
+                        "companyName": "Clenergen Corp.",
+                        "tickerSymbol": "CRGE",
+                        "amountSpent": 5000
+                    }
+                ]
+    /{tickersymbol}:
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  {
+                      "shares": 45.045,
+                      "organizationName": "Parks",
+                      "companyName": "Wynn Resorts Ltd.",
+                      "tickerSymbol": "WYNN",
+                      "amountSpent": 5000
+                  }
+      put:
+        description: overwrite a stock
+        body:
+          application/json:
+            example: |
+              {
+                "organizationName": "Fire Department",
+                "tickerSymbol": "BRF",
+                "companyName": "VanEck Vectors Brazil Small-Cap ETF",
+                "amountSpent": 2000,
+                "shares": 89.4454
+              }
+        responses:
+          200:     
+      delete:
+        description: delete a stock
+        responses:
+          204:
