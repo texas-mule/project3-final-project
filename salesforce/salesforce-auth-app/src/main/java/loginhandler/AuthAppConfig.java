@@ -1,4 +1,4 @@
-package userloginrecordhandler;
+package loginhandler;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

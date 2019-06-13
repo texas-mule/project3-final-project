@@ -1,124 +1,61 @@
-package userloginrecordhandler;
+package sforcesoap;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import com.sforce.soap.enterprise.EnterpriseConnection;
-import com.sforce.soap.enterprise.QueryResult;
-import com.sforce.soap.enterprise.SaveResult;
-import com.sforce.soap.enterprise.sobject.SObject;
-import com.sforce.soap.enterprise.sobject.UserLoginRecord__c;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 
 public class EnterpriseConnectionHandler {
 
 	private EnterpriseConnection connection;
+	private ConnectorConfig config;
+	private Properties props;
+	private ScheduledExecutorService executorService;
+	private String username;
+	private String password;
+	Runnable queryTask;
 
-	public EnterpriseConnectionHandler() {
-		Properties props = new Properties();
-		try {
-			props.load(new FileInputStream("src/connection.properties"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String username = props.getProperty("username");
-		String password = props.getProperty("password");
-		String authEndPoint = props.getProperty("endpointurl");
-		String securityToken = props.getProperty("securitytoken");
-		try {
-			ConnectorConfig config = new ConnectorConfig();
-			config.setUsername(username);
-			config.setPassword(password + securityToken);
-			config.setAuthEndpoint(authEndPoint);
-			connection = new EnterpriseConnection(config);
-		} catch (ConnectionException ce) {
-			ce.printStackTrace();
-		}
+	EnterpriseConnectionHandler() throws ConnectionException, FileNotFoundException, IOException {
+		setProps();
+		setConfig();
+		setQueryTask();
+		connection = new EnterpriseConnection(config);
+		executorService = Executors.newSingleThreadScheduledExecutor();
+		executorService.schedule(queryTask, 37, TimeUnit.MINUTES);
 	}
 
-	public void deleteById(String id) {
-		String[] ids = { id };
-		try {
-			connection.delete(ids);
-		} catch (ConnectionException e) {
-			e.printStackTrace();
-		}
+	EnterpriseConnection getConnection() {
+		return connection;
 	}
 
-	public void logout() {
-		try {
-			connection.logout();
-		} catch (ConnectionException ce) {
-			ce.printStackTrace();
-		}
+	private void setProps() throws FileNotFoundException, IOException {
+		props = new Properties();
+		props.load(new FileInputStream("src/connection.properties"));
+		username = props.getProperty("username");
+		password = props.getProperty("password") + props.getProperty("securitytoken");
 	}
 
-	public UserLoginRecord__c saveNewUserLoginRecord(UserLoginRecord__c ulr) {
-		SObject[] sObjects = { ulr };
-		try {
-			SaveResult[] sr = connection.create(sObjects);
-			if (sr[0].getSuccess()) {
-				ulr.setId(sr[0].getId());
-				return ulr;
+	private void setConfig() {
+		config = new ConnectorConfig();
+		config.setUsername(username);
+		config.setPassword(password);
+		config.setAuthEndpoint(props.getProperty("endpointurl"));
+	}
+
+	private void setQueryTask() {
+		queryTask = () -> {
+			try {
+				connection.query("Select * From Account");
+			} catch (ConnectionException e) {
+				e.printStackTrace();
 			}
-		} catch (ConnectionException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public UserLoginRecord__c fromUsernamePassword(String username, String password) {
-		UserLoginRecord__c ulr = new UserLoginRecord__c();
-		ulr.setPassword__c(password);
-		ulr.setUsername__c(username);
-		return ulr;
-	}
-
-	public String getPasswordByUsername(String username) {
-		UserLoginRecord__c ulr = new UserLoginRecord__c();
-		try {
-			QueryResult qr = connection
-					.query("SELECT Password__c FROM UserLoginRecord__c WHERE Username__c = '" + username + "'");
-			boolean done = false;
-			while (qr.getSize() > 0 && !done) {
-				SObject[] records = qr.getRecords();
-				for (SObject so : records) {
-					ulr = (UserLoginRecord__c) so;
-				}
-				done = qr.isDone();
-			}
-		} catch (ConnectionException e) {
-			e.printStackTrace();
-		}
-		return ulr.getPassword__c();
-	}
-
-	public String saveNewUserLoginRecord(String username, String encode) {
-		return saveNewUserLoginRecord(fromUsernamePassword(username, encode)).getId();
-	}
-
-	public void logUsers() {
-		UserLoginRecord__c ulr = new UserLoginRecord__c();
-		try {
-			QueryResult qr = connection.query("SELECT Password__c, Username__c FROM UserLoginRecord__c");
-			boolean done = false;
-			while (qr.getSize() > 0 && !done) {
-				SObject[] records = qr.getRecords();
-				for (SObject so : records) {
-					ulr = (UserLoginRecord__c) so;
-					System.out.println(ulr.getUsername__c());
-					System.out.println(ulr.getPassword__c());
-				}
-				done = qr.isDone();
-			}
-		} catch (ConnectionException e) {
-			e.printStackTrace();
-		}
-
+		};
 	}
 
 }

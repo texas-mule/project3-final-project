@@ -1,4 +1,4 @@
-package userloginrecordhandler;
+package loginhandler;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -6,13 +6,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sforce.ws.ConnectionException;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthAppController {
 
 	AuthAppService service;
 
-	public AuthAppController() {
+	public AuthAppController() throws ConnectionException {
 		service = new AuthAppService();
 	}
 
