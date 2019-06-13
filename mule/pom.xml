@@ -5,9 +5,8 @@
 	<groupId>com.mycompany</groupId>
 	<artifactId>project3-mule</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>mule-application</packaging>
-
-	<name>project3-mule</name>
+    <packaging>mule</packaging>
+    <name>project3-mule</name>
 
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,7 +83,7 @@
 							<username>${uid}</username>
 							<password>${pwd}</password>
 							<workerType>Micro</workerType>
-							<applicationName>${artifactId} - ${maven.build.timestamp}</applicationName>
+							<applicationName>${project.artifactId} - ${maven.build.timestamp}</applicationName>
 							<redeploy>true</redeploy>
 							<environment>Sandbox</environment>
 						</configuration>
