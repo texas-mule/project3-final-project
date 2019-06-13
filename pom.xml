@@ -1,41 +1,51 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                        https://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-   <groupId>com.revature.texas-mule.project-3</groupId>
-   <artifactId>city-comptroller</artifactId>
-   <version>0.0.0</version>
-   <packaging>pom</packaging>
+	<groupId>com.revature.texas-mule.project-3</groupId>
+	<artifactId>city-comptroller</artifactId>
+	<version>0.0.0</version>
+	<packaging>pom</packaging>
 
-   <properties>
-       <maven.compiler.source>1.8</maven.compiler.source>
-       <maven.compiler.target>1.8</maven.compiler.target>
-       <maven.deploy.skip>true</maven.deploy.skip>
-   </properties>
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
 
-   <modules>
-       <module>salesforce/pom.xml</module>
-       <module>devops/pom.xml</module>
-       <module>microservices/pom.xml</module>
-       <module>mule/pom.xml</module>
-   </modules>
+	<modules>
+		<module>salesforce/pom.xml</module>
+		<module>devops/pom.xml</module>
+		<module>microservices/pom.xml</module>
+		<module>mule/pom.xml</module>
+	</modules>
 
-   <dependencies>
-       <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>4.11</version>
-           <scope>test</scope>
-       </dependency>
-   </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.sun/tools -->
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>tools</artifactId>
+			<version>1.7.0.13</version>
+			<scope>system</scope>
+		</dependency>
 
-    <build>
-       <plugins>
-           <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-surefire-plugin</artifactId>
-           </plugin>
-       </plugins>
-   </build>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
