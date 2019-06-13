@@ -102,7 +102,7 @@
 					<plugin>
 						<groupId>org.mule.tools.maven</groupId>
 						<artifactId>mule-app-maven-plugin</artifactId>
-						<version>1.1</version>
+						<version>1.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<copyToAppsDirectory>true</copyToAppsDirectory>
@@ -171,6 +171,14 @@
 			<version>1.1.9</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.sun/tools -->
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>tools</artifactId>
+			<version>1.7.0.13</version>
+			<scope>system</scope>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
