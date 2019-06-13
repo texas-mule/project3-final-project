@@ -14,24 +14,26 @@ pipeline {
   stages {
 	stage('Build'){
 		steps {
-			sh 'mvn clean verify compile'
+			sh 'mvn -DskipTests clean verify compile'
 		}
 	}
 
     stage('Unit Test') {
 
       steps {
-
-        sh 'mvn clean test'
-
+        sh 'mvn test'
       }
-
+	  post{
+		always {
+			junit 'target/surefire-reports/*.xml'
+		}
+	  }
     }
 
     stage('Deploy CloudHub') {
 
       steps {
-	    sh 'mvn package'
+	    sh 'mvn -B -DskipTests package'
         sh 'mvn deploy -P cloudhub -Dmule.version=4.2.0 -Danypoint.username=${ANYPOINT_CREDENTIALS_USR} -Danypoint.password=${ANYPOINT_CREDENTIALS_PSW}'
       }
 
