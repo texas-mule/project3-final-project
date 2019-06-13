@@ -14,14 +14,14 @@ pipeline {
   stages {
 	stage('Build'){
 		steps {
-			sh 'mvn -DskipTests clean verify compile'
+			sh 'mvn -f mule/pom.xml -DskipTests clean verify compile'
 		}
 	}
 
     stage('Unit Test') {
 
       steps {
-        sh 'mvn test'
+        sh 'mvn -f mule/pom.xml test'
       }
 	  post{
 		always {
@@ -33,7 +33,7 @@ pipeline {
     stage('Deploy CloudHub') {
 
       steps {
-	    sh 'mvn -B -DskipTests package'
+	    sh 'mvn -f mule/pom.xml -B -DskipTests package'
         sh 'mvn deploy -P cloudhub -Dmule.version=4.2.0 -Danypoint.username=${ANYPOINT_CREDENTIALS_USR} -Danypoint.password=${ANYPOINT_CREDENTIALS_PSW}'
       }
 
