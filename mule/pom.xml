@@ -176,6 +176,8 @@
 			<groupId>com.sun</groupId>
 			<artifactId>tools</artifactId>
 			<version>1.7.0.13</version>
+			<scope>system</scope>
+			<filePath>/opt/bitnami/java/lib/tools.jar</filePath>
 		</dependency>
 
 	</dependencies>
