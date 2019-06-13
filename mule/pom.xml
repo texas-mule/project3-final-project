@@ -171,15 +171,6 @@
 			<version>1.1.9</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.sun/tools -->
-		<dependency>
-			<groupId>com.sun</groupId>
-			<artifactId>tools</artifactId>
-			<version>1.7.0.13</version>
-			<scope>system</scope>
-			<systemPath>/opt/bitnami/java/lib/tools.jar</systemPath>
-		</dependency>
-
 	</dependencies>
 
 	<repositories>
