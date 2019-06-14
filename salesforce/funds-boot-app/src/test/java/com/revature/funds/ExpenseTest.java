@@ -9,8 +9,6 @@ public class ExpenseTest {
 
 	@Test
 	public void testExpense() {
-		Expense expense = new Expense();
-		
 		fail("Not yet implemented");
 	}
 

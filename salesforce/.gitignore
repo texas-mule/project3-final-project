@@ -4,7 +4,8 @@
 revenue-boot-app/ApplicationContext.xml
 revenue-boot-app/application.revenue.properties
 revenue-boot-app/ebs/
-
+wsdls-and-jars/
+actualsalesforcelogindetails.txt
 
 .DS_Store
 
