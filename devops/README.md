@@ -28,25 +28,29 @@
     - [x] Credential setup
     - [x] Software config
 
-  - [ ] Config Server
-    - [ ] Write
-    - [ ] Test
-    - [ ] Populate
-    - [ ] Deploy
+  - [x] Config Server
+    - [x] Write
+    - [x] Test
+    - [x] Populate
+    - [x] Deploy
 
 ### Friday-Saturday, June 7-8, 2019
-  - [ ] Continuous Delivery
-  - [ ] Maven deploy plugin configuration
+  - [x] Continuous Delivery
+  - [x] Maven deploy plugin configuration
 
 ### Monday, June 10, 2019
-  - [ ] Testing
-    - [ ] Microservice coverage: 50%
-    - [ ] Mule Flow coverage: 85%
+  - [ ] Test implementation
 
 ### Tuesday, June 11, 2019
-  - [ ] Documentation
-    - [ ] RAML verification
-    - [ ] JavaDoc verification
-    - [ ] Wiki
-      - [ ] Getting started
-      - [ ] Endpoints
+  - [x] Documentation
+    - [x] RAML verification
+    - [x] JavaDoc verification
+    - [x] Wiki
+      - [x] Getting started
+      - [x] Endpoints
+
+### Friday - Sunday, June 14-16 2019
+  - [ ] Pipeline Debugging
+
+### Monday, June 17 2019
+  - [ ] Jacoco Integration
