@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.revature.texas-mule.project-3</groupId>
+    <artifactId>salesforce-boot-apps</artifactId>
+    <version>0.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>expense-boot-app/pom.xml</module>
+        <module>funds-boot-app/pom.xml</module>
+        <module>revenue-boot-app/pom.xml</module>
+        <module>salesforce-auth-app/pom.xml</module>
+        <module>stock-boot-app/Project3Stocks/pom.xml</module>
+    </modules>
+</project>

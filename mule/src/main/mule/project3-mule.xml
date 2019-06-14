@@ -21,6 +21,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="86051baa-7a0f-47e9-a92a-cc44bb1e6c5d" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+  
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="24c85e9e-14fe-4eab-9e2f-0417c4575a91" file="config.yaml" key="emailpassword" />
 	<http:request-config name="SalesforceAuthConnection" doc:name="HTTP Request configuration" doc:id="56cbf6f2-3ee4-4552-aab9-d59d3e4772bd" basePath="/auth" >
 		<http:request-connection host="${authentication.url}" port="80" />
@@ -352,6 +353,32 @@ payload]]></ee:set-payload>
 	<flow name="SALESFORCE-revenue\finances\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
 		<http:listener doc:name="/financessalesforce/{organization}" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
 		<logger level="INFO" doc:name="Logger" doc:id="105fea0d-d4ce-4483-98d9-71cedffa4635" message="/financessalesforce/{organization}"/>
+		<ee:transform doc:name="Transform Message" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start]]></ee:set-variable>
+				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="f09731a4-daf4-442e-b1dd-3725f46fffc4" config-ref="RevenueConnection" path="/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:query-params>
+		</http:request>    
+</flow>
+	<flow name="SALESFORCE-revenue\finances\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
+		<http:listener doc:name="/financessalesforce/{organization}" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="105fea0d-d4ce-4483-98d9-71cedffa4635" message="/financessalesforce/{organization}"/>
 		<ee:transform doc:name="Store organization, start, end" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
 			<ee:message >
 			</ee:message>
@@ -460,6 +487,62 @@ var payload={
 		}
 		else -> null		
 	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" >
+		<http:listener doc:name="getAssetsByOrganization" doc:id="c864561c-8ceb-4f64-b406-4022b87e9293" config-ref="HTTP_Listener_config" path="/assets/{organization}"/>
+		<ee:transform doc:name="Transform Message" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e1957d6e-79aa-4920-bfc5-a2d3fdab9a1e" />
+		<http:request method="GET" doc:name="Get Assets from Salesforce" doc:id="d233f571-8538-4553-a6a4-7026b224d252" config-ref="RevenueConnection" path="/name/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="2b1418f4-05a4-4eba-ab5a-1bfda6e3e9ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	assets: payload.item
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" >
+		<http:listener doc:name="grabStockExpenses" doc:id="50293c85-4600-4819-9833-08a70fad463f" config-ref="HTTP_Listener_config" path="/stock/{organization}/expense"/>
+		<ee:transform doc:name="Transform Message" doc:id="e29db558-536c-44a2-8d00-37a0b0a20f33" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="StockConfiguration" path="/{organization}" outputMimeType="application/json">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="cd490054-664a-48d2-89d7-498e1e9f57b1" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8eb9266f-2387-466e-b238-0b77ab170204" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	stockvalues: payload.amountSpent
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
