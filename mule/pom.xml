@@ -38,6 +38,7 @@
 						<muleVersion>${app.runtime}</muleVersion>
 						<workerType>Micro</workerType>
 						<applicationName>${project.artifactId}</applicationName>
+						<redeploy>true</redeploy>
 						<environment>Sandbox</environment>
 					</cloudHubDeployment>
 				</configuration>
@@ -76,6 +77,12 @@
 			<version>1.1.9</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mule.runtime/mule-core -->
+		<dependency>
+			<groupId>org.mule.runtime</groupId>
+			<artifactId>mule-core</artifactId>
+			<version>4.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -92,7 +99,7 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
-	
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>mulesoft-releases</id>
