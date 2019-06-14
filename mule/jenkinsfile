@@ -3,16 +3,14 @@ pipeline {
   agent any
   
   environment {
-
         ANYPOINT_CREDENTIALS = credentials('anypoint.credentials')
-
-      }
-	tools {
-		maven 'default'
-	}
+  }
+  
+  tools {
+        maven 'default'
+  }
 
   stages {
-
 	stage('Build'){
 		steps {
 			sh 'mvn -f mule/pom.xml -DskipTests clean verify compile'
@@ -20,13 +18,17 @@ pipeline {
 	}
 
     stage('Test') {
-
       steps {
         sh 'mvn -f mule/pom.xml test'
       }
     }
 
     stage('Deploy CloudHub') {
+      node {
+	configFileProvider([configFile(fileId: 'config.yml', targetLocation: 'config.yml')]) {
+		//potential additional options
+	}
+      }
       steps {
 	      sh 'mvn -f mule/pom.xml -B -DskipTests package -DattachMuleSources'
 	      sh 'mvn -f mule/pom.xml deploy -DmuleDeploy -Dmule.version=4.2.0 -Danypoint.username=${ANYPOINT_CREDENTIALS_USR} -Danypoint.password=${ANYPOINT_CREDENTIALS_PSW}'
