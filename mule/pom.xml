@@ -38,7 +38,6 @@
 						<muleVersion>${app.runtime}</muleVersion>
 						<workerType>Micro</workerType>
 						<applicationName>${project.artifactId}</applicationName>
-						<redeploy>true</redeploy>
 						<environment>Sandbox</environment>
 					</cloudHubDeployment>
 				</configuration>
