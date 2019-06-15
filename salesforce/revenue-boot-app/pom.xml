@@ -14,6 +14,7 @@
 	<version>1.0</version>
 	<name>revenue</name>
 	<description>Revenue</description>
+	<packaging>war</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>

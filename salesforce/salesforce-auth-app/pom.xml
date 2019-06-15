@@ -7,7 +7,7 @@
 	<groupId>city.comptroller</groupId>
 	<artifactId>user-login-record-handler</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>user-login-record-handler</name>
 	<description>The user login record handler</description>
 	
