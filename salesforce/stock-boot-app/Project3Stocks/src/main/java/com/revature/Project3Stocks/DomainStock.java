@@ -5,6 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author Associate
+ *
+ */
 @Entity
 @Table(name = "stock")
 public class DomainStock {
@@ -18,12 +22,18 @@ public class DomainStock {
 	private BigDecimal amountSpent;
 	private BigDecimal shares;
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "DomainStock [tickerSymbol=" + tickerSymbol + ", companyName=" + companyName + ", organizationName="
 				+ organizationName + ", amountSpent=" + amountSpent + ", shares=" + shares + ", id=" + id + "]";
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -37,6 +47,9 @@ public class DomainStock {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -79,54 +92,98 @@ public class DomainStock {
 		return true;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getTickerSymbol() {
 		return tickerSymbol;
 	}
 
+	/**
+	 * @param tickerSymbol
+	 */
 	public void setTickerSymbol(String tickerSymbol) {
 		this.tickerSymbol = tickerSymbol;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getCompanyName() {
 		return companyName;
 	}
 
+	/**
+	 * @param companyName
+	 */
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getOrganizationName() {
 		return organizationName;
 	}
 
+	/**
+	 * @param organizationName
+	 */
 	public void setOrganizationName(String organizationName) {
 		this.organizationName = organizationName;
 	}
 
+	/**
+	 * @return
+	 */
 	public BigDecimal getAmountSpent() {
 		return amountSpent;
 	}
 
+	/**
+	 * @param amountSpent
+	 */
 	public void setAmountSpent(BigDecimal amountSpent) {
 		this.amountSpent = amountSpent;
 	}
 
+	/**
+	 * @return
+	 */
 	public BigDecimal getShares() {
 		return shares;
 	}
 
+	/**
+	 * @param shares
+	 */
 	public void setShares(BigDecimal shares) {
 		this.shares = shares;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * @param id
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
 
+	/**
+	 * @param tickerSymbol
+	 * @param companyName
+	 * @param organizationName
+	 * @param amountSpent
+	 * @param shares
+	 * @param id
+	 */
 	public DomainStock(String tickerSymbol, String companyName, String organizationName, BigDecimal amountSpent,
 			BigDecimal shares, String id) {
 		super();
@@ -138,6 +195,9 @@ public class DomainStock {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 */
 	public DomainStock() {
 		super();
 	}
