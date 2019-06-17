@@ -1,4 +1,4 @@
-package com.revature.totalexpenses;
+package com.revature.total;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TotalExpensesApplicationTests {
+public class TotalApplicationTests {
 
 	@Test
 	public void contextLoads() {
