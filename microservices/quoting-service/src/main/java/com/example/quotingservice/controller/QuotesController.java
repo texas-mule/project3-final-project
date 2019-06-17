@@ -83,6 +83,18 @@ public class QuotesController{
 		hashMap.put(item, temp);
 		return hashMap;
 	}
+	@GetMapping("/building/{squarefeet}/{department}")
+    public BuildingQuotes newBuildingPurchase(@PathVariable("squarefeet") int squareFootage, @PathVariable("department") String department) throws Exception{
+    	SalesForce salesForce=new SalesForce();
+    	BuildingQuotes buildingQuotes=new BuildingQuotes();
+    	buildingQuotes.BuildingEstimate(squareFootage);
+    	HashMap<String, Double> matrial=new HashMap<String, Double>();
+    	matrial=buildingQuotes.getMatrial();
+    	double temp=matrial.get("StudFrame-labor")+ matrial.get("tilt-labor")+ matrial.get("SteelFrames-labor");
+    	salesForce.call_me(department,buildingQuotes.getQuote(),squareFootage,temp);
+    	return buildingQuotes;
+    	
+	}
 		
 	
 }
