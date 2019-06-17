@@ -1,4 +1,4 @@
-package com.revature.funds;
+package com.revature.fundsbootapp;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -78,4 +78,37 @@ public class ExpenseService {
 		return sum;
 	}
 	
+	
+	/**
+	 * Gets projections, Expenses of URI department, for the following year after given two previous years
+	 * @param department
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public double expensesByDateYear(String department, String startDate, String endDate) throws JsonParseException, JsonMappingException, IOException{
+		String yearOneStart = startDate+"-01-01"; // sets start date for year one
+		String yearOneEnd = startDate+"-12-31"; // sets end date for year one
+		String yearTwoStart = endDate+"-01-01"; // sets start date for year two
+		String yearTwoEnd = endDate+"-12-31"; // sets end date for year two
+		double sumOne = 0; // instantiate sum of expenses for year one
+		double sumTwo = 0; // instantiate sum of expenses for year two
+		
+		RestTemplate restTemplate = new RestTemplate(); //set template for rest service consumption
+
+		String url = this.expensesLink+"/"+department+"?start="+yearOneStart+"&end="+yearOneEnd; // set url with former year info
+		Expense[] expensesObjects = restTemplate.getForObject(url, Expense[].class);
+
+		for(Expense item: expensesObjects){sumOne+=Double.parseDouble(item.getAmount());} //calculate sum of expenses
+		
+		url = this.expensesLink+"/"+department+"?start="+yearTwoStart+"&end="+yearTwoEnd; // set url with latter year info		
+		expensesObjects = restTemplate.getForObject(url, Expense[].class);
+		
+		for(Expense item: expensesObjects){sumTwo+=Double.parseDouble(item.getAmount());} //calculate sum of expenses
+		
+		return ((sumTwo - sumOne)+sumTwo)*1.03;
+	}
 }

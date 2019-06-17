@@ -1,4 +1,4 @@
-package com.revature.funds;
+package com.revature.fundsbootapp;
 
 
 import java.util.Calendar;

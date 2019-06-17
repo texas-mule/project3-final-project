@@ -1,4 +1,4 @@
-package com.revature.funds;
+package com.revature.fundsbootapp;
 
 import java.sql.Date;
 
@@ -8,7 +8,6 @@ public class Revenue {
 	double cost;
 	Date date;
 	String item;
-
 	
 	public String getItem() {
 		return item;
