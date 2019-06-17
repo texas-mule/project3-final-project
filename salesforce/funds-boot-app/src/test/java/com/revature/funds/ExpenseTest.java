@@ -5,12 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ExpenseTest {
+import com.revature.fundsbootapp.Expense;
 
-	@Test
-	public void testExpense() {
-		fail("Not yet implemented");
-	}
+public class ExpenseTest {
 
 	@Test
 	public void testGetId() {
@@ -76,15 +73,6 @@ public class ExpenseTest {
 		Assert.assertEquals(description, expense.getDescription());
 	}
 
-	@Test
-	public void testGetDate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetDate() {
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testGetQuantity() {
@@ -102,14 +90,5 @@ public class ExpenseTest {
 		Assert.assertTrue(quantity == expense.getQuantity());
 	}
 
-	@Test
-	public void testToString() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testCompareTo() {
-		fail("Not yet implemented");
-	}
 
 }

@@ -2,8 +2,13 @@ package com.revature.funds;
 
 import static org.junit.Assert.*;
 
+import java.sql.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.revature.fundsbootapp.Revenue;
 
 public class RevenueTest {
 
@@ -61,19 +66,5 @@ public class RevenueTest {
 		Assert.assertTrue(cost == actual);
 	}
 
-	@Test
-	public void testGetDate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetDate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testToString() {
-		fail("Not yet implemented");
-	}
 
 }
