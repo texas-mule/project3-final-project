@@ -3,22 +3,22 @@ package com.revature.stockservice.model;
 public class Stock {
 	
 	private String tickerSymbol;
-	private String name;
-	private double stockPurchasePrice;
+	private String companyName;
+	private double amountSpent;
 	private double sharesOwned;
 	private double currentPrice;
 	private double profitOrLoss;
 	
-	public Stock(String tickerSymbol, String name, double stockPurchasePrice, double sharesOwned, double currentPrice, double profitOrLoss) {
+	public Stock(String tickerSymbol, String companyName, double amountSpent, double sharesOwned, double currentPrice, double profitOrLoss) {
 		
 		this.tickerSymbol = tickerSymbol;
-		this.name = name;
-		this.stockPurchasePrice = stockPurchasePrice;
+		this.companyName = companyName;
+		this.amountSpent = amountSpent;
 		this.sharesOwned = sharesOwned;
 		this.currentPrice = currentPrice;
 		this.profitOrLoss = profitOrLoss;
 	}
-
+	
 	public String getTickerSymbol() {
 		return tickerSymbol;
 	}
@@ -27,20 +27,20 @@ public class Stock {
 		this.tickerSymbol = tickerSymbol;
 	}
 
-	public String getName() {
-		return name;
+	public String getCompanyName() {
+		return companyName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
-	public double getstockPurchasePrice() {
-		return stockPurchasePrice;
+	public double getAmountSpent() {
+		return amountSpent;
 	}
 
-	public void setstockPurchasePrice(double stockPurchasePrice) {
-		this.stockPurchasePrice = stockPurchasePrice;
+	public void setAmountSpent(double amountSpent) {
+		this.amountSpent = amountSpent;
 	}
 
 	public double getSharesOwned() {
@@ -65,8 +65,5 @@ public class Stock {
 
 	public void setProfitOrLoss(double profitOrLoss) {
 		this.profitOrLoss = profitOrLoss;
-	}
-	
-	
-	
+	}	
 }

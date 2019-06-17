@@ -111,6 +111,40 @@ public class TotalController {
 		//return restTemplate.getForObject(serviceURL + "/" + organization, Expense[].class);
 	}
 	
+	@GetMapping("/expenses/after/{organization}/{date1}")
+	public Group totalExpensesAfterDate
+	(@PathVariable String organization, @PathVariable Date date1) {
+		//Calls an Expense array for the given expenses you get
+		//serviceURL_1 is the rest service called upon
+		//used for setting the endpoint for the organization
+		Expense[] list = restTemplate.getForObject(serviceURL_1 + "/" 
+				+ organization, Expense[].class);
+		
+		String output = "output";
+		BigDecimal total = new BigDecimal(0.00);
+		int listsize = list.length;
+		Date datewant;
+		
+		//checks to see if the dates called are after date1 if they are
+		//returns datewant corresponding amount and add to total
+		for (int i = 0; i < listsize; i++){
+			datewant = list[i].getDate();
+			if(organization.equals(list[i].getOrganization())){
+				System.out.println(datewant.compareTo(date1));
+				if(datewant.compareTo(date1) > 0){
+					total = total.add(list[i].getAmount());
+					System.out.println(total);
+				}
+			}
+		}
+		output = total.toPlainString();
+		
+		Group group = new Group();
+		group.setAmount(total);
+		group.setOrganization(organization);
+		return group;
+	}
+	
 	/**
 	 * 
 	 * @param organization: Given organization looking for
@@ -169,6 +203,40 @@ public class TotalController {
 		group.setOrganization(organization);
 		return group;
 		//return restTemplate.getForObject(serviceURL + "/" + organization, Expense[].class);
+	}
+	
+	@GetMapping("/revenue/after/{organization}/{date1}")
+	public Group totalRevenuesAfterDate
+	(@PathVariable String organization, @PathVariable Date date1) {
+		//Calls an Expense array for the given expenses you get
+		//serviceURL_1 is the rest service called upon
+		//used for setting the endpoint for the organization
+		Revenue[] list = restTemplate.getForObject(serviceURL_1 + "/" 
+				+ organization, Revenue[].class);
+		
+		String output = "output";
+		BigDecimal total = new BigDecimal(0.00);
+		int listsize = list.length;
+		Date datewant;
+		
+		//checks to see if the dates called are after date1 if they are
+		//returns datewant corresponding amount and add to total
+		for (int i = 0; i < listsize; i++){
+			datewant = list[i].getDate();
+			if(organization.equals(list[i].getName())){
+				System.out.println(datewant.compareTo(date1));
+				if(datewant.compareTo(date1) > 0){
+					total = total.add(list[i].getCost());
+					System.out.println(total);
+				}
+			}
+		}
+		output = total.toPlainString();
+		
+		Group group = new Group();
+		group.setAmount(total);
+		group.setOrganization(organization);
+		return group;
 	}
 	
 	/**
