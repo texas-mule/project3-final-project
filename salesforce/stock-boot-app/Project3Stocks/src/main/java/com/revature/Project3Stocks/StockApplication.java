@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author Associate
+ *
+ */
 @SpringBootApplication
 @RestController
 @RequestMapping("/stock")
@@ -28,27 +32,48 @@ public class StockApplication extends SpringBootServletInitializer {
 	@Autowired
 	StockService stockService;
 
+	/**
+	 * @param bullstock
+	 */
 	@PostMapping
 	public void create(@RequestBody DomainStock bullstock) {
 		stockService.create(bullstock);
 	}
 
+	/**
+	 * @return
+	 */
 	@GetMapping("/{organization}")
 	public List<DomainStock> getAll() {
 		return stockService.getAllStocks();
 	}
 
+	/**
+	 * @param organization
+	 * @param tickersymbol
+	 * @return
+	 */
 	@GetMapping("/{organization}/{tickersymbol}")
 	public Optional<DomainStock> getByTickerSymbol(@PathParam("organization") String organization,
 			@PathParam("tickersymbol") String tickersymbol) {
 		return stockService.getByTickerSymbol(organization, tickersymbol);
 	}
 
+	/**
+	 * @param organization
+	 * @param tickersymbol
+	 */
 	@DeleteMapping("/{organization}/{tickersymbol}")
 	public void delete(@PathParam("organization") String organization, @PathParam("tickersymbol") String tickersymbol) {
 		stockService.deleteStock(organization, tickersymbol);
 	}
 
+	/**
+	 * @param organization
+	 * @param tickersymbol
+	 * @param bullstock
+	 * @param response
+	 */
 	@PutMapping("/{organization}/{tickersymbol}")
 	public void overwrite(@PathParam("organization") String organization,
 			@PathParam("tickersymbol") String tickersymbol, @RequestBody DomainStock bullstock,
@@ -60,11 +85,17 @@ public class StockApplication extends SpringBootServletInitializer {
 	/*
 	 * @PostMapping("/signin") public String login()
 	 */
+	/* (non-Javadoc)
+	 * @see org.springframework.boot.web.servlet.support.SpringBootServletInitializer#configure(org.springframework.boot.builder.SpringApplicationBuilder)
+	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder stockapp) {
 		return stockapp.sources(StockApplication.class).properties("spring.config.name: application.stock)");
 	}
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		System.setProperty("spring.config.name", "application.stock");
 		SpringApplication.run(StockApplication.class, args);
