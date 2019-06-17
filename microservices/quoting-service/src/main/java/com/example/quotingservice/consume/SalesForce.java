@@ -1,10 +1,22 @@
 package com.example.quotingservice.consume;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 public class SalesForce {
@@ -71,4 +83,18 @@ public class SalesForce {
 			
 		}
 	}
+	//String urlParameters  = 
+	//URL url = new URL("");
+	//String request        = "";
+	public void call_me(String name, double quote, int sqFeet, double labor) throws Exception {
+		
+		//String data = "name="+name+"&quote="+Double.toString(quote)+"&sqFeet="+Double.toString(sqFeet)+"&labor="+Double.toString(labor);
+	       URL url = new URL("http://buildingsmylife.k9grpmjmya.us-east-2.elasticbeanstalk.com/buildings/building?"+"name="+name+"&quote="+Double.toString(quote)+"&sqFeet="+Integer.toString(sqFeet)+"&labor="+Double.toString(labor));
+	       HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	       con.setRequestMethod("POST");
+	       con.setDoOutput(true);
+	       //con.getOutputStream().write(data.getBytes("UTF-8"));
+	       con.getInputStream();  
+	       //name=fire&quote=22.00&sqFeet=100&labor=22.00
+}
 }
