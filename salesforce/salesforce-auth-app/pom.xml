@@ -20,7 +20,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>com.revature.boot.BootApplication</start-class>
+		<start-class>loginhandler.AuthAppApplication</start-class>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.revature</groupId>
-			<artifactId>login-wsdl</artifactId>
+			<artifactId>userloginrecord</artifactId>
 			<version>0.0.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
