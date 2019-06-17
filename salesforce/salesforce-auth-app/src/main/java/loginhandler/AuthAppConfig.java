@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,6 +16,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -60,14 +64,18 @@ public class AuthAppConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		String password = passwordEncoder().encode("pw");
-		auth.inMemoryAuthentication().withUser("un").password(password).roles(USER);
+//		String password = passwordEncoder().encode("pw");
+//		auth.inMemoryAuthentication().withUser("un").password(password).roles(USER);
+		List<UserDetails> lud = new LinkedList<UserDetails>();
 		for (Map.Entry<String, String> username : authAppService.usernamesAndPasswords().entrySet()) {
-			String pw = passwordEncoder().encode(username.getValue());
+			lud.add(new UserDetailsImpl(username.getValue(), username.getKey()));
 			System.out.println(username.getKey());
 			System.out.println(username.getValue());
-			auth.inMemoryAuthentication().withUser(username.getKey()).password(pw).roles("User");
 		}
+		UserDetailsService uds = new UserDetailsServiceImpl(lud);
+		 auth
+         .userDetailsService(uds)
+         .passwordEncoder(passwordEncoder());
 
 	}
 
