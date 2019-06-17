@@ -1,26 +1,26 @@
 package loginhandler;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.sforce.soap.enterprise.sobject.Login__c;
 import com.sforce.soap.enterprise.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 
 import sforcesoap.SObjectHandler;
 
+@Service
 public class AuthAppService {
 
+	@Autowired
 	private PasswordEncoder passwordEncoder;
-	private SObjectHandler sObjectHandler;
 
-	AuthAppService() {
-		passwordEncoder = new BCryptPasswordEncoder();
-		try {
-			sObjectHandler = new SObjectHandler();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	@Autowired
+	private SObjectHandler sObjectHandler;
 
 	public boolean newAccount(String pass, String username) {
 		return sObjectHandler.saveNewSObject(loginFromUsernamePassword(username, passwordEncoder.encode(pass))) != null;
@@ -36,6 +36,19 @@ public class AuthAppService {
 			ce.printStackTrace();
 			return false;
 		}
+	}
+
+	public Map<String, String> usernamesAndPasswords() {
+		Map<String, String> usernames = new HashMap<String, String>();
+		try {
+			for (SObject user : sObjectHandler.queryMany("SELECT Username__c,Password__c FROM Login__c")) {
+				Login__c loginc = (Login__c) user;
+				usernames.put(loginc.getUsername__c(), loginc.getPassword__c());
+			}
+		} catch (ConnectionException e) {
+			e.printStackTrace();
+		}
+		return usernames;
 	}
 
 	public void logusers() {
