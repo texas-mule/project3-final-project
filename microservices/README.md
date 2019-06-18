@@ -20,7 +20,21 @@
 
 # Sprint 5		June 12
 	Work on Presentation
+	
+# Sprint 2.1		June 15
+	Put all services on EC2 Eureka/Zuul Server
 
+# Sprint 2.2		June 16
+	Work on security implementation
+
+# Sprint 2.3		June 17
+	Finish Security and make sure mule is satisfied
+	Code Freeze at end of day
+
+# Sprint 2.4		June 19
+	Work on Presentation
+
+# Quoting Service RAML
 ```
 #%RAML 1.0
 
