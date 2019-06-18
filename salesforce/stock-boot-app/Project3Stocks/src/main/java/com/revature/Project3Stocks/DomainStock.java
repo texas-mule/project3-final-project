@@ -1,8 +1,12 @@
 package com.revature.Project3Stocks;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 /**
@@ -11,13 +15,15 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "stock")
+@IdClass(StockKey.class)
 public class DomainStock {
 
-	@Id
-	private String id;
 
+	@Id
 	private String tickerSymbol;
 	private String companyName;
+	
+	@Id
 	private String organizationName;
 	private BigDecimal amountSpent;
 	private BigDecimal shares;
@@ -28,9 +34,18 @@ public class DomainStock {
 	@Override
 	public String toString() {
 		return "DomainStock [tickerSymbol=" + tickerSymbol + ", companyName=" + companyName + ", organizationName="
-				+ organizationName + ", amountSpent=" + amountSpent + ", shares=" + shares + ", id=" + id + "]";
+				+ organizationName + ", amountSpent=" + amountSpent + ", shares=" + shares + "]";
 	}
 
+	public StockKey getId() {
+		return new StockKey(organizationName, tickerSymbol);
+	}
+
+	public void setId(StockKey id) {
+		organizationName = id.getOrganizationName();
+		tickerSymbol = id.getTickerSymbol();
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -40,7 +55,6 @@ public class DomainStock {
 		int result = 1;
 		result = prime * result + ((amountSpent == null) ? 0 : amountSpent.hashCode());
 		result = prime * result + ((companyName == null) ? 0 : companyName.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((organizationName == null) ? 0 : organizationName.hashCode());
 		result = prime * result + ((shares == null) ? 0 : shares.hashCode());
 		result = prime * result + ((tickerSymbol == null) ? 0 : tickerSymbol.hashCode());
@@ -68,11 +82,6 @@ public class DomainStock {
 			if (other.companyName != null)
 				return false;
 		} else if (!companyName.equals(other.companyName))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
 			return false;
 		if (organizationName == null) {
 			if (other.organizationName != null)
@@ -163,20 +172,6 @@ public class DomainStock {
 	}
 
 	/**
-	 * @return
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	/**
 	 * @param tickerSymbol
 	 * @param companyName
 	 * @param organizationName
@@ -192,7 +187,6 @@ public class DomainStock {
 		this.organizationName = organizationName;
 		this.amountSpent = amountSpent;
 		this.shares = shares;
-		this.id = id;
 	}
 
 	/**
@@ -200,6 +194,16 @@ public class DomainStock {
 	 */
 	public DomainStock() {
 		super();
+	}
+	
+	public Map<String, Object> toMap(){
+		Map<String, Object> mappedDomainStock = new HashMap<String, Object>();
+		mappedDomainStock.put("organizationName", this.organizationName);
+		mappedDomainStock.put("tickerSymbol", this.tickerSymbol);
+		mappedDomainStock.put("companyName", this.companyName);
+		mappedDomainStock.put("amountSpent", this.amountSpent);
+		mappedDomainStock.put("shares", this.shares);
+		return mappedDomainStock;
 	}
 
 }

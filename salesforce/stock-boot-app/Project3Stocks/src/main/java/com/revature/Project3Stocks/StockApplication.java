@@ -1,10 +1,10 @@
 package com.revature.Project3Stocks;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -13,18 +13,19 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+//import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * @author Associate
  *
  */
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @SpringBootApplication
 @RestController
 @RequestMapping("/stock")
@@ -46,8 +47,8 @@ public class StockApplication extends SpringBootServletInitializer {
 	 * @return
 	 */
 	@GetMapping("/{organization}")
-	public List<DomainStock> getAll() {
-		return stockService.getAllStocks();
+	public List<Map<String,Object>> getAll(@PathVariable("organization") String organization) {
+		return stockService.getAllStocks(organization);
 	}
 
 	/**
@@ -56,8 +57,8 @@ public class StockApplication extends SpringBootServletInitializer {
 	 * @return
 	 */
 	@GetMapping("/{organization}/{tickersymbol}")
-	public Optional<DomainStock> getByTickerSymbol(@PathParam("organization") String organization,
-			@PathParam("tickersymbol") String tickersymbol) {
+	public Map<String,Object> getByTickerSymbol(@PathVariable("organization") String organization,
+			@PathVariable("tickersymbol") String tickersymbol) {
 		return stockService.getByTickerSymbol(organization, tickersymbol);
 	}
 
@@ -66,7 +67,7 @@ public class StockApplication extends SpringBootServletInitializer {
 	 * @param tickersymbol
 	 */
 	@DeleteMapping("/{organization}/{tickersymbol}")
-	public void delete(@PathParam("organization") String organization, @PathParam("tickersymbol") String tickersymbol) {
+	public void delete(@PathVariable("organization") String organization, @PathVariable("tickersymbol") String tickersymbol) {
 		stockService.deleteStock(organization, tickersymbol);
 	}
 
@@ -77,8 +78,8 @@ public class StockApplication extends SpringBootServletInitializer {
 	 * @param response
 	 */
 	@PutMapping("/{organization}/{tickersymbol}")
-	public void overwrite(@PathParam("organization") String organization,
-			@PathParam("tickersymbol") String tickersymbol, @RequestBody DomainStock bullstock,
+	public void overwrite(@PathVariable("organization") String organization,
+			@PathVariable("tickersymbol") String tickersymbol, @RequestBody DomainStock bullstock,
 			HttpServletResponse response) {
 		if (!stockService.overwriteStock(organization, tickersymbol, bullstock))
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
