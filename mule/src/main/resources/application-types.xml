@@ -6,4 +6,10 @@
 type: string]]></types:shape>
     </types:type>
   </types:catalog>
+  <types:enrichment select="#446964ea-bc8e-492c-b0f8-4098efc50e11"/>
+  <types:enrichment select="#f5c1a10d-7d3f-4718-bfff-73ef02dc750a"/>
+  <types:enrichment select="#5167f77d-3c30-4656-9a37-25972a23b82e"/>
+  <types:enrichment select="#88830c2d-a31d-4cec-8fea-2d392084df22"/>
+  <types:enrichment select="#236c4786-9c82-4348-b235-d52d796e1957"/>
+  <types:enrichment select="#b0c383ec-53a7-4642-a749-0b84a6affc15"/>
 </types:mule>
