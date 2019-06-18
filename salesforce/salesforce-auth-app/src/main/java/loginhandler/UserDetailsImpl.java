@@ -5,7 +5,9 @@ import java.util.LinkedList;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserDetailsImpl implements UserDetails {
 
 	/**
@@ -17,6 +19,18 @@ public class UserDetailsImpl implements UserDetails {
 
 	UserDetailsImpl(String password, String username) {
 		this.password = password;
+		this.username = username;
+	}
+
+	UserDetailsImpl() {
+		super();
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public void setUsername(String username) {
 		this.username = username;
 	}
 

@@ -23,6 +23,8 @@ public class AuthAppService {
 	private SObjectHandler sObjectHandler;
 
 	public boolean newAccount(String pass, String username) {
+		System.out.println("Create new account: "+ username);
+		System.out.println("Create new account: "+ pass);
 		return sObjectHandler.saveNewSObject(loginFromUsernamePassword(username, passwordEncoder.encode(pass))) != null;
 	}
 

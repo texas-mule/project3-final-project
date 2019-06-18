@@ -13,5 +13,5 @@ public class GrantedAuthorityImpl implements GrantedAuthority {
 	public String getAuthority() {
 		return "USER";
 	}
-	
+
 }

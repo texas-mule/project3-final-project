@@ -22,55 +22,49 @@ public class RevenueController {
 	RevenueService service;
 
 	@PostMapping("/add/{name}/{cost}/{item}")
-	public void AddRevenue(@PathVariable("name") String name, @PathVariable("cost") float cost,
+	public void addRevenue(@PathVariable("name") String name, @PathVariable("cost") float cost,
 			@PathVariable("item") String item) {
-		
-		service.AddRevenueEntry(new RevenueDomain(name, item, BigDecimal.valueOf(cost), null));
-		
+
+		service.addRevenueEntry(new RevenueDomain(name, item, BigDecimal.valueOf(cost), null));
 	}
 
 	@GetMapping("/{organization}")
-	public List<RevenueDomain> SelectAll(@PathVariable("organization") String organization,
+	public List<RevenueDomain> selectAll(@PathVariable("organization") String organization,
 			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate) {
-		
-		return service.SelectAll(organization, startDate.orElse(null), endDate.orElse(null));
-		
+
+		return service.selectAll(organization, startDate.orElse(null), endDate.orElse(null));
+	}
+
+	@GetMapping("/{organization}/summary")
+	public List<RevenueNoDate> selectCollated(@PathVariable("organization") String organization,
+			@RequestParam("start") Optional<String> startDate, @RequestParam("end") Optional<String> endDate) {
+		return service.selectCollated(organization, startDate.orElse(null), endDate.orElse(null));
 	}
 
 	@GetMapping("/allRevenue")
 	public List<RevenueDomain> allRevenue(@RequestParam("start") Optional<String> startDate,
 			@RequestParam("end") Optional<String> endDate) {
-		
-		return service.SelectAll(null, startDate.orElse(null), endDate.orElse(null));
-		
+		return service.selectAll(null, startDate.orElse(null), endDate.orElse(null));
 	}
 
 	@GetMapping("/name/{name}")
 	public List<RevenueDomain> getName(@PathVariable String name) {
-		
-		return service.SelectByName(name);
-		
+		return service.selectByName(name);
 	}
 
 	@GetMapping("/Abovecost/{cost}")
-	public List<RevenueDomain> Abovecost(@PathVariable("cost") float cost) {
-		
-		return service.SelectAbove(cost);
-		
+	public List<RevenueDomain> abovecost(@PathVariable("cost") float cost) {
+		return service.selectAbove(cost);
 	}
 
 	@GetMapping("/Belowcost/{cost}")
-	public List<RevenueDomain> BelowCost(@PathVariable("cost") float cost) {
-		
-		return service.SelectBelow(cost);
-		
+	public List<RevenueDomain> belowCost(@PathVariable("cost") float cost) {
+		return service.selectBelow(cost);
 	}
 
 	@GetMapping("/betweenDates/{date1}/{date2}")
 	public List<RevenueDomain> betweenDates(@PathVariable String date1, @PathVariable String date2) {
-		
-		return service.SelectByDate(date1, date2);
-		
+		return service.selectByDate(date1, date2);
 	}
 
 	@PutMapping("/overwriteByID/{ID}/{name}/{cost}/{item}/{date}")
