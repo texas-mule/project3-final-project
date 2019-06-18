@@ -8,14 +8,6 @@
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
 	<munit:config name="project3-mule-test-suite.xml" />
-	<munit:test name="project3-mule-test-suite-project3-muleFlowTest" description="Test" doc:id="c16dec31-e860-4111-b132-9d4a9d6cda7b" >
-		<munit:execution >
-			<flow-ref doc:name="Flow-ref to project3-muleFlow" doc:id="32246534-e2d1-45f5-a7ab-fbeb0104a91d" name="project3-muleFlow" target="/test/test/test"/>
-		</munit:execution>
-		<munit:validation >
-			<munit-tools:assert-that doc:name="Assert that" doc:id="4f957223-0799-4669-b437-d0d4150dd433" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Success!"/>
-		</munit:validation>
-	</munit:test>
 
 
 </mule>
