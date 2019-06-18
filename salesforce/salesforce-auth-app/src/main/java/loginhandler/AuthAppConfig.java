@@ -12,14 +12,18 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,9 +40,8 @@ import sforcesoap.SObjectHandler;
  */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuthAppConfig extends WebSecurityConfigurerAdapter {
-
-	private static final String USER = "USER";
 
 	private ConnectorConfig config;
 	private Properties props;
@@ -46,16 +49,28 @@ public class AuthAppConfig extends WebSecurityConfigurerAdapter {
 	private String password;
 
 	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
+	
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+	@Autowired
 	AuthAppService authAppService;
+	
+	@Autowired
+	UserDetailsService userDetailsService;
 
 	/**
 	 *
 	 */
 	@Override
 	public void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.cors().and().csrf().disable();
-		httpSecurity.authorizeRequests().antMatchers("/auth/login").hasRole(USER).antMatchers("/auth/register")
-				.hasRole(USER).antMatchers("/auth/logusers").hasRole(USER).and().formLogin();
+		httpSecurity.cors().and().csrf().disable().authorizeRequests().antMatchers("/authenticate").permitAll()
+				.anyRequest().authenticated().and().exceptionHandling()
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	/**
@@ -64,19 +79,8 @@ public class AuthAppConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//		String password = passwordEncoder().encode("pw");
-//		auth.inMemoryAuthentication().withUser("un").password(password).roles(USER);
-		List<UserDetails> lud = new LinkedList<UserDetails>();
-		for (Map.Entry<String, String> username : authAppService.usernamesAndPasswords().entrySet()) {
-			lud.add(new UserDetailsImpl(username.getValue(), username.getKey()));
-			System.out.println(username.getKey());
-			System.out.println(username.getValue());
-		}
-		UserDetailsService uds = new UserDetailsServiceImpl(lud);
-		 auth
-         .userDetailsService(uds)
-         .passwordEncoder(passwordEncoder());
 
+		auth.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	/**
@@ -87,6 +91,23 @@ public class AuthAppConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	@Bean
+	public UserDetailsService userDetailsService() {
+		List<UserDetails> lud = new LinkedList<UserDetails>();
+		for (Map.Entry<String, String> username : authAppService.usernamesAndPasswords().entrySet()) {
+			lud.add(new UserDetailsImpl(username.getValue(), username.getKey()));
+			System.out.println(username.getKey());
+			System.out.println(username.getValue());
+		}
+		return new UserDetailsServiceImpl(lud);
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
 	/**
 	 * @return
 	 */
@@ -94,7 +115,7 @@ public class AuthAppConfig extends WebSecurityConfigurerAdapter {
 	public SObjectHandler sObjectHandler() {
 		return new SObjectHandler();
 	}
-	
+
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfig = new CorsConfiguration();

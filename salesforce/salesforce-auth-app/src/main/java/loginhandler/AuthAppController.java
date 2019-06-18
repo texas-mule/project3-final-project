@@ -26,6 +26,7 @@ public class AuthAppController {
 	@PostMapping("/register")
 	public boolean register(@RequestHeader(value = "username") String username,
 			@RequestHeader(value = "password") String password) {
+		System.out.println(username+password);
 		return service.newAccount(password, username);
 	}
 
@@ -39,7 +40,7 @@ public class AuthAppController {
 			@RequestHeader(value = "password") String password) {
 		return service.signIn(password, username);
 	}
-	
+
 	@GetMapping("/logusers")
 	public void logusers() {
 		service.logusers();

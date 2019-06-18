@@ -4,6 +4,7 @@
 bin/
 target/
 connection.properties
+application.login.properties
 
 # Do not ignore library jars
 !lib/**/*.jar
