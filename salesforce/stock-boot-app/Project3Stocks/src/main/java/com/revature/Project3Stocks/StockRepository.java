@@ -7,4 +7,4 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface StockRepository extends JpaRepository<DomainStock, String> {}
+public interface StockRepository extends JpaRepository<DomainStock, StockKey> {}
