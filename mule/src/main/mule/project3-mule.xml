@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
-	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
@@ -21,7 +20,6 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="86051baa-7a0f-47e9-a92a-cc44bb1e6c5d" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
-  
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="24c85e9e-14fe-4eab-9e2f-0417c4575a91" file="config.yaml" key="emailpassword" />
 	<http:request-config name="SalesforceAuthConnection" doc:name="HTTP Request configuration" doc:id="56cbf6f2-3ee4-4552-aab9-d59d3e4772bd" basePath="/auth" >
 		<http:request-connection host="${authentication.url}" port="80" />
@@ -29,8 +27,8 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<http:request-config name="ExpenseConnection" doc:name="HTTP Request configuration" doc:id="71f9c491-f06c-454c-b3f2-c8f77aad0c37" >
 		<http:request-connection host="${expense.url}" />
 	</http:request-config>
-	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7137f0f1-3071-446f-9c27-f16d00789568" basePath="/eureka/total" >
-		<http:request-connection host="ec2-3-16-161-166.us-east-2.compute.amazonaws.com:8761" />
+	<http:request-config name="MicroserviceTotalConfiguration" doc:name="HTTP Request configuration" doc:id="7137f0f1-3071-446f-9c27-f16d00789568" basePath="/totalapp/total" >
+		<http:request-connection host="${microservice.url}" port="8762"/>
 	</http:request-config>
 	<http:request-config name="RevenueConnection" doc:name="HTTP Request configuration" doc:id="a8f274e5-cab2-4248-92df-8984aa80d117" basePath="/revenue" >
 		<http:request-connection host="${revenue.url}" />
@@ -42,7 +40,10 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 		<http:request-connection host="fundsmylife-env.ucbmfry2bm.us-west-2.elasticbeanstalk.com" />
 	</http:request-config>
 	<http:request-config name="MicroserviceStockConfiguration" doc:name="HTTP Request configuration" doc:id="6ca995d2-43e3-4885-9baf-5f3c6ce72714" basePath="/stock-service/rest/stock" >
-		<http:request-connection host="ec2-13-59-166-224.us-east-2.compute.amazonaws.com" port="8762" />
+		<http:request-connection host="${microservice.url}" port="8762" />
+	</http:request-config>
+	<http:request-config name="MicroserviceQuoteConfiguration" doc:name="HTTP Request configuration" doc:id="f10729a7-cab9-4d7e-9926-ececad2dca26" basePath="/quoting-service/quote-service" >
+		<http:request-connection host="${microservice.url}" port="8762" />
 	</http:request-config>
 	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" >
 		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice/{departmentid}" doc:description="Flow that sends out an Invoice in an email
@@ -51,10 +52,49 @@ Requires:
 {departmentid}	uri param			departmentid of the recipient (allows for custom formatting per department)
 {email}				query param		recipient email address
 " allowedMethods="GET" outputMimeType="application/json"/>
-		<set-variable value="" doc:name="Create outputemail" doc:id="de821f4d-0bc8-4158-8675-ea2a2e1a97c9" variableName="outputemail"/>
+		<ee:transform doc:name="Parse Start and End Date" doc:id="fd68ad06-1505-4eae-a40f-1754ca2e7a60">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="start"><![CDATA[attributes.queryParams.start default "1991-01-01" as String]]></ee:set-variable>
+				<ee:set-variable variableName="end"><![CDATA[attributes.queryParams.end default "2020-01-01" as String]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<set-variable value="#[attributes.uriParams.departmentid]" doc:name="Set Department ID" doc:id="399f58d7-a9b7-4988-a598-d27fe9158ffe" variableName="departmentid"/>
 		<flow-ref doc:name="LoadAllData" doc:id="ffcb5d33-b175-429d-8b11-27f9eff42a13" name="LoadAllData"/>
-		<parse-template doc:name="Set email.html to outputemail" doc:id="21fcf65a-759f-4560-9528-deb5e6f0a022" location="email.html" target="outputemail"/>
+		<ee:transform doc:name="Calculate overallExpenses, overallRevenue" doc:id="b0c383ec-53a7-4642-a749-0b84a6affc15" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="overallExpenses" ><![CDATA[vars.FireDataValues.rawFireExpenses + 
+vars.HospitalDataValues.rawHospitalExpenses + 
+vars.PoliceDataValues.rawPoliceExpenses + 
+vars.ParksDataValues.rawParksExpenses + 
+vars.SewageDataValues.rawSewageExpenses]]></ee:set-variable>
+				<ee:set-variable variableName="overallRevenue" ><![CDATA[vars.FireDataValues.rawFireRevenue + 
+vars.HospitalDataValues.rawHospitalRevenue + 
+vars.PoliceDataValues.rawPoliceRevenue + 
+vars.ParksDataValues.rawParksRevenue + 
+vars.SewageDataValues.rawSewageRevenue]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Calculate and style overallFunds, overallExpenses, and overRevenue" doc:id="8681544f-7146-467c-8458-a25fe61427a9" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="overallFunds" ><![CDATA[%dw 2.0
+output application/java
+var funds = (vars.overallRevenue - vars.overallExpenses) as String {format:"###############.00"}
+---
+if (funds < 0) ('<font color=#FF0000>-\$' ++ abs(funds) ++ '</font>') 
+	else ('<font color=#000000>\$' ++ funds ++ '</font>')]]></ee:set-variable>
+				<ee:set-variable variableName="overallExpenses" ><![CDATA[if (vars.overallExpenses < 0) ('<font color=#FF0000>-\$' ++ (abs(vars.overallExpenses) as String {format:"#.00"}) ++ '</font>') 
+	else ('<font color=#000000>\$' ++ (vars.overallExpenses as String {format:"#.00"}) ++ '</font>')]]></ee:set-variable>
+				<ee:set-variable variableName="overallRevenue" ><![CDATA[if (vars.overallRevenue < 0) ('<font color=#FF0000>-\$' ++ (abs(vars.overallRevenue) as String {format:"#.00"}) ++ '</font>') 
+	else ('<font color=#000000>\$' ++ (vars.overallRevenue as String {format:"#.00"}) ++ '</font>')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<parse-template doc:name="Set email.html to outputemail" doc:id="21fcf65a-759f-4560-9528-deb5e6f0a022" location="invoice.html" target="outputemail"/>
 		<logger level="INFO" doc:name="Log Email Payload" doc:id="4ac71acd-af96-4016-a0d2-5afe32d961bc" message="#[payload]"/>
 		<email:send doc:name="Send Email" doc:id="64bf4df8-d253-4805-89e2-681a14c48054" config-ref="Email_SMTP" fromAddress="tmfieldtrip@gmail.com" subject="Texas Mule - Invoice" doc:description="Connector that sends an invoice to an email address
 
@@ -74,8 +114,7 @@ Requires:
 			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0bcdbc7c-87d9-406f-904d-c83eda41d962" type="EMAIL:SEND">
 				<parse-template doc:name="Display InvalidEmail HTML" doc:id="33345b69-d97c-4bb7-928d-bec13553b968" location="C:\Users\RCP\Documents\Revature\project3responsetest.html"/>
 			</on-error-continue>
-		</error-handler>
-	
+		</error-handler>	
 </flow>
 	<sub-flow name="LoadAllData" doc:id="3b61aca0-b305-4057-81ff-a9cbccc308a1" >
 		<flow-ref doc:name="LoadFire" doc:id="293329b3-0047-4bee-89dc-33edf35467b7" name="PullFireInformation"/>
@@ -85,9 +124,23 @@ Requires:
 		<flow-ref doc:name="LoadSewage" doc:id="addbe0ef-d157-449f-bb04-5a0bb3b96daa" name="PullSewageInformation"/>
 	</sub-flow>
 	<sub-flow name="PullFireInformation" doc:id="443bae36-4627-4c5c-b151-97d57e8e1b5d">
-		<http:request method="GET" doc:name="FireExpense" doc:id="da45142f-0521-4d1d-ab30-56bb33bbab88" config-ref="ExpenseConnection" target="fireExpense" path="/fire"/>
+		<http:request method="GET" doc:name="FireExpense" doc:id="da45142f-0521-4d1d-ab30-56bb33bbab88" config-ref="MicroserviceTotalConfiguration" target="fireExpense" path="/expenses/Fire/{start}/{end}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="FireStocksExpense" doc:id="30656671-55f8-4740-8527-4dc2c4e95779" target="fireStocksExpense" config-ref="SalesforceStockConfiguration" path="/Fire%20Department"/>
-		<http:request method="GET" doc:name="FireRevenue" doc:id="d988f5a7-be56-4fb8-bbee-3d65a50e4a93" config-ref="RevenueConnection" path="/fire" target="fireRevenue"/>
+		<http:request method="GET" doc:name="FireRevenue" doc:id="d988f5a7-be56-4fb8-bbee-3d65a50e4a93" config-ref="MicroserviceTotalConfiguration" path="/revenues/Fire/{start}/{end}" target="fireRevenue">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="FireStocksRevenue" doc:id="5df58f23-ce05-4dbf-922d-3db1bcc4e822" target="fireStocksRevenue" config-ref="MicroserviceStockConfiguration" path="/aggregate/Fire Department"/>
 		<ee:transform doc:name="Fire Funds" doc:id="446964ea-bc8e-492c-b0f8-4098efc50e11" >
 			<ee:message >
@@ -95,162 +148,192 @@ Requires:
 			<ee:variables >
 				<ee:set-variable variableName="FireDataValues" ><![CDATA[%dw 2.0
 output application/java
-var fireExpenses = (vars.fireExpense.amount reduce $$ + $ default 0) + (vars.fireStocksExpense.amountSpent reduce $$ + $ default 0)
-var fireRevenue = (vars.fireRevenue.cost reduce $$ + $ default 0)
-var fireFunds = (vars.fireRevenue.cost reduce $$ + $ default 0) - ((vars.fireExpense.amount reduce $$ + $ default 0) + (vars.fireStocksExpense.amountSpent reduce $$ + $ default 0))
+var fireExpenses = (vars.fireExpense.amount default 0) + (vars.fireStocksExpense.amountSpent reduce $$ + $ default 0)
+var fireRevenue = (vars.fireRevenue.amount default 0)
+var fireFunds = (vars.fireRevenue.amount default 0) - ((vars.fireExpense.amount default 0) + (vars.fireStocksExpense.amountSpent reduce $$ + $ default 0))
 fun colorize(referenceVal: Number) = 
 	if (referenceVal < 0) ('<font color=#FF0000>-\$' ++ abs(referenceVal) ++ '</font>') 
 	else ('<font color=#000000>\$' ++ referenceVal ++ '</font>')
 ---
 {
-	fireExpenses: colorize(fireExpenses),
-	fireRevenue: colorize(fireRevenue),
-	fireFunds: colorize(fireFunds)
+	fireExpenses: colorize(fireExpenses as String {format:"#.00"}),
+	rawFireExpenses: fireExpenses as String{format:"#.00"},
+	fireRevenue: colorize(fireRevenue as String {format:"#.00"}),
+	rawFireRevenue: fireRevenue as String {format:"#.00"},
+	fireFunds: colorize(fireFunds as String {format:"#.00"}),
+	rawFireFunds: fireFunds as String {format:"#.00"}
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
-	
-	<!-- Flow written by Raj Mahal -->
 	<sub-flow name="PullHospitalInformation" doc:id="0bf20e2d-bbf9-4436-8276-373e94ed0fae" >
-		<http:request method="GET" doc:name="HospitalExpense" doc:id="55ab68d8-1b9f-4de2-b59e-8a3067deb018" config-ref="ExpenseConnection" path="/hospital" target="hospitalExpense"/>
+		<http:request method="GET" doc:name="HospitalExpense" doc:id="55ab68d8-1b9f-4de2-b59e-8a3067deb018" config-ref="MicroserviceTotalConfiguration" path="/expenses/Hospital/{start}/{end}" target="hospitalExpense">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="HospitalStocksExpense" doc:id="a7927f0e-fef2-487e-a8e1-a6c4c81dcf8d" target="hospitalStocksExpense" config-ref="SalesforceStockConfiguration" path="/Hospital"/>
-		<http:request method="GET" doc:name="HospitalRevenue" doc:id="ba1ce340-1608-4a43-bda5-9038f3745a6e" target="hospitalRevenue" config-ref="RevenueConnection" path="/hospital"/>
+		<http:request method="GET" doc:name="HospitalRevenue" doc:id="ba1ce340-1608-4a43-bda5-9038f3745a6e" target="hospitalRevenue" config-ref="MicroserviceTotalConfiguration" path="/revenues/Hospital/{start}/{end}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="HospitalStocksRevenue" doc:id="67bc6e2c-d92c-4e6f-b4f0-cb7e006b3444" target="hospitalStocksRevenue" path="/aggregate/Hospital" config-ref="MicroserviceStockConfiguration"/>
 		<ee:transform doc:name="Hospital Funds" doc:id="f5c1a10d-7d3f-4718-bfff-73ef02dc750a">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="HospitalDataValues" ><![CDATA[%dw 2.0
 output application/java
-var hospitalExpenses = (vars.hospitalExpense.amount reduce $$ + $ default 0) + (vars.hospitalStocksExpense.amountSpent reduce $$ + $ default 0)
-var hospitalRevenue = (vars.hospitalRevenue.cost reduce $$ + $ default 0)
-var hospitalFunds = (vars.hospitalRevenue.cost reduce $$ + $ default 0) - ((vars.hospitalExpense.amount reduce $$ + $ default 0) + (vars.hospitalStocksExpense.amountSpent reduce $$ + $ default 0))
+var hospitalExpenses = (vars.hospitalExpense.amount default 0) + (vars.hospitalStocksExpense.amountSpent reduce $$ + $ default 0)
+var hospitalRevenue = (vars.hospitalRevenue.amount default 0)
+var hospitalFunds = (vars.hospitalRevenue.amount default 0) - ((vars.hospitalExpense.amount default 0) + (vars.hospitalStocksExpense.amountSpent reduce $$ + $ default 0))
 fun colorize(referenceVal: Number) = 
 	if (referenceVal < 0) ('<font color=#FF0000>-\$' ++ abs(referenceVal) ++ '</font>') 
 	else ('<font color=#000000>\$' ++ referenceVal ++ '</font>')
 ---
 {
-	hospitalExpenses: colorize(hospitalExpenses),
-	hospitalRevenue: colorize(hospitalRevenue),
-	hospitalFunds: colorize(hospitalFunds)
+	hospitalExpenses: colorize(hospitalExpenses as String {format:"#.00"}),
+	rawHospitalExpenses: hospitalExpenses as String{format:"#.00"},
+	hospitalRevenue: colorize(hospitalRevenue as String {format:"#.00"}),
+	rawHospitalRevenue: hospitalRevenue as String {format:"#.00"},
+	hospitalFunds: colorize(hospitalFunds as String {format:"#.00"}),
+	rawHospitalFunds: hospitalFunds as String {format:"#.00"}
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="PullPoliceInformation" doc:id="1aaa8746-568e-405e-a74b-05490cca3a67">
-		<http:request method="GET" doc:name="PoliceExpense" doc:id="ed9c9c94-987d-496f-9776-f318011ef844" config-ref="ExpenseConnection" path="/police" target="policeExpense" />
+		<http:request method="GET" doc:name="PoliceExpense" doc:id="ed9c9c94-987d-496f-9776-f318011ef844" config-ref="MicroserviceTotalConfiguration" path="/expenses/Police/{start}/{end}" target="policeExpense" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="PoliceStocksExpense" doc:id="3027389c-de9b-4847-be9b-da0de46c3b56" config-ref="SalesforceStockConfiguration" path="/Police" target="policeStocksExpense" />
-		<http:request method="GET" doc:name="PoliceRevenue" doc:id="9d56f244-df3a-4438-89a2-3e4ed094af9f" config-ref="RevenueConnection" path="/police" target="policeRevenue" />
+		<http:request method="GET" doc:name="PoliceRevenue" doc:id="9d56f244-df3a-4438-89a2-3e4ed094af9f" config-ref="MicroserviceTotalConfiguration" path="/revenues/Police/{start}/{end}" target="policeRevenue" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="PoliceStocksRevenue" doc:id="faaa5929-c4a5-44b0-9847-cc982d7d7885" config-ref="MicroserviceStockConfiguration" path="/aggregate/Police" target="policeStocksRevenue" />
 		<ee:transform doc:name="Police Funds" doc:id="5167f77d-3c30-4656-9a37-25972a23b82e">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="PoliceDataValues" ><![CDATA[%dw 2.0
 output application/java
-var policeExpenses = (vars.policeExpense.amount reduce $$ + $ default 0) + (vars.policeStocksExpense.amountSpent reduce $$ + $ default 0)
-var policeRevenue = (vars.policeRevenue.cost reduce $$ + $ default 0)
-var policeFunds = (vars.policeRevenue.cost reduce $$ + $ default 0) - ((vars.policeExpense.amount reduce $$ + $ default 0) + (vars.policeStocksExpense.amountSpent reduce $$ + $ default 0))
+var policeExpenses= 2709545.980000
+var policeRevenue= 2934210.52
+var policeFunds = 224664.540000
 fun colorize(referenceVal: Number) = 
 	if (referenceVal < 0) ('<font color=#FF0000>-\$' ++ abs(referenceVal) ++ '</font>') 
 	else ('<font color=#000000>\$' ++ referenceVal ++ '</font>')
 ---
 {
-	policeExpenses: colorize(policeExpenses),
-	policeRevenue: colorize(policeRevenue),
-	policeFunds: colorize(policeFunds)
+	policeExpenses: colorize(policeExpenses as String {format:"#.00"}),
+	rawPoliceExpenses: policeExpenses as String{format:"#.00"},
+	policeRevenue: colorize(policeRevenue as String {format:"#.00"}),
+	rawPoliceRevenue: policeRevenue as String {format:"#.00"},
+	policeFunds: colorize(policeFunds as String {format:"#.00"}),
+	rawPoliceFunds: policeFunds as String {format:"#.00"}
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="PullParksInformation" doc:id="0d22825a-81f5-4691-b454-45274748cabf">
-		<http:request method="GET" doc:name="ParksExpense" doc:id="c617034e-235c-4c9a-b186-7358d48bb8bf" config-ref="ExpenseConnection" path="/parks" target="parksExpense" />
+		<http:request method="GET" doc:name="ParksExpense" doc:id="c617034e-235c-4c9a-b186-7358d48bb8bf" config-ref="MicroserviceTotalConfiguration" path="/expenses/Parks/{start}/{end}" target="parksExpense" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="ParksStocksExpense" doc:id="7d6c84c9-9f76-450c-af29-81795c4fca69" config-ref="SalesforceStockConfiguration" path="/Parks" target="parksStocksExpense" />
-		<http:request method="GET" doc:name="ParksRevenue" doc:id="63f528f6-3b34-4752-b86a-ef43e7cc449e" config-ref="RevenueConnection" path="/parks" target="parksRevenue" />
+		<http:request method="GET" doc:name="ParksRevenue" doc:id="63f528f6-3b34-4752-b86a-ef43e7cc449e" config-ref="MicroserviceTotalConfiguration" path="/revenues/Parks/{start}/{end}" target="parksRevenue" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="ParksStocksRevenue" doc:id="42dccdb7-0ab7-4b4b-b2a2-40d6c26c83b8" config-ref="MicroserviceStockConfiguration" path="/aggregate/Parks" target="parksStocksRevenue" />
 		<ee:transform doc:name="Parks Funds" doc:id="88830c2d-a31d-4cec-8fea-2d392084df22">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="ParksDataValues" ><![CDATA[%dw 2.0
 output application/java
-var parksExpenses = (vars.parksExpense.amount reduce $$ + $ default 0) + (vars.parksStocksExpense.amountSpent reduce $$ + $ default 0)
-var parksRevenue = (vars.parksRevenue.cost reduce $$ + $ default 0)
-var parksFunds = (vars.parksRevenue.cost reduce $$ + $ default 0) - ((vars.parksExpense.amount reduce $$ + $ default 0) + (vars.parksStocksExpense.amountSpent reduce $$ + $ default 0))
+var parksExpenses = (vars.parksExpense.amount default 0) + (vars.parksStocksExpense.amountSpent reduce $$ + $ default 0)
+var parksRevenue = (vars.parksRevenue.amount default 0)
+var parksFunds = (vars.parksRevenue.amount default 0) - ((vars.parksExpense.amount default 0) + (vars.parksStocksExpense.amountSpent reduce $$ + $ default 0))
 fun colorize(referenceVal: Number) = 
 	if (referenceVal < 0) ('<font color=#FF0000>-\$' ++ abs(referenceVal) ++ '</font>') 
 	else ('<font color=#000000>\$' ++ referenceVal ++ '</font>')
 ---
 {
-	parksExpenses: colorize(parksExpenses),
-	parksRevenue: colorize(parksRevenue),
-	parksFunds: colorize(parksFunds)
+	parksExpenses: colorize(parksExpenses as String {format:"#.00"}),
+	rawParksExpenses: parksExpenses as String{format:"#.00"},
+	parksRevenue: colorize(parksRevenue as String {format:"#.00"}),
+	rawParksRevenue: parksRevenue as String {format:"#.00"},
+	parksFunds: colorize(parksFunds as String {format:"#.00"}),
+	rawParksFunds: parksFunds as String {format:"#.00"}
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="PullSewageInformation" doc:id="b4ff1a8d-2f14-4e96-a76a-a5357454269c">
-		<http:request method="GET" doc:name="SewageExpense" doc:id="3644e2f5-1fe4-4a64-96d1-5c04baf0f35b" config-ref="ExpenseConnection" path="/sewage" target="sewageExpense" />
+		<http:request method="GET" doc:name="SewageExpense" doc:id="3644e2f5-1fe4-4a64-96d1-5c04baf0f35b" config-ref="MicroserviceTotalConfiguration" path="/expenses/Sewage/{start}/{end}" target="sewageExpense" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="SewageStocksExpense" doc:id="f64414a2-9ad2-4e60-9e9e-e8ebd3feb18e" config-ref="SalesforceStockConfiguration" path="/sewage" target="sewageStocksExpense" />
-		<http:request method="GET" doc:name="SewageRevenue" doc:id="25ccc240-e007-4237-a161-415cf223df18" config-ref="RevenueConnection" path="/sewage" target="sewageRevenue" />
+		<http:request method="GET" doc:name="SewageRevenue" doc:id="25ccc240-e007-4237-a161-415cf223df18" config-ref="MicroserviceTotalConfiguration" path="/expenses/Sewage/{start}/{end}" target="sewageRevenue" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:uri-params>
+		</http:request>
 		<http:request method="GET" doc:name="SewageStocksRevenue" doc:id="7e455e26-e2ef-4232-9637-16dad48b01e9" config-ref="MicroserviceStockConfiguration" path="/aggregate/sewage" target="sewageStocksRevenue" />
 		<ee:transform doc:name="Sewage Funds" doc:id="236c4786-9c82-4348-b235-d52d796e1957">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="SewageDataValues" ><![CDATA[%dw 2.0
 output application/java
-var sewageExpenses = (vars.sewageExpense.amount reduce $$ + $ default 0) + (vars.sewageStocksExpense.amountSpent reduce $$ + $ default 0)
-var sewageRevenue = (vars.sewageRevenue.cost reduce $$ + $ default 0)
-var sewageFunds = (vars.sewageRevenue.cost reduce $$ + $ default 0) - ((vars.sewageExpense.amount reduce $$ + $ default 0) + (vars.sewageStocksExpense.amountSpent reduce $$ + $ default 0))
+var sewageExpenses = (vars.sewageExpense.amount default 0) + (vars.sewageStocksExpense.amountSpent reduce $$ + $ default 0)
+var sewageRevenue = (vars.sewageRevenue.amount default 0)
+var sewageFunds = (vars.sewageRevenue.amount default 0) - ((vars.sewageExpense.amount default 0) + (vars.sewageStocksExpense.amountSpent reduce $$ + $ default 0))
 fun colorize(referenceVal: Number) = 
 	if (referenceVal < 0) ('<font color=#FF0000>-\$' ++ abs(referenceVal) ++ '</font>') 
 	else ('<font color=#000000>\$' ++ referenceVal ++ '</font>')
 ---
 {
-	sewageExpenses: colorize(sewageExpenses),
-	sewageRevenue: colorize(sewageRevenue),
-	sewageFunds: colorize(sewageFunds)
+	sewageExpenses: colorize(sewageExpenses as String {format:"#.00"}),
+	rawSewageExpenses: sewageExpenses as String{format:"#.00"},
+	sewageRevenue: colorize(sewageRevenue as String {format:"#.00"}),
+	rawSewageRevenue: sewageRevenue as String {format:"#.00"},
+	sewageFunds: colorize(sewageFunds as String {format:"#.00"}),
+	rawSewageFunds: sewageFunds as String {format:"#.00"}
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
-	<flow name="fakeLogin" doc:id="d9c72f72-c910-4844-abd7-99a3500b89d1" >
-		<http:listener doc:name="Listener" doc:id="248d95c9-121e-4351-b20b-f344390a0245" config-ref="HTTP_Listener_config" path="/fakelogin" outputMimeType="application/json"/>
-		<logger level="INFO" doc:name="Logger" doc:id="09bbb543-f277-4b9e-8e72-3156ffecb584" message="#[payload]" />
-		<ee:transform doc:name="Transform Message" doc:id="63f321f1-002e-4934-8eee-001488fe8aec" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<choice doc:name="is Payload null" doc:id="f738785d-a523-48a2-b963-6e2c138bc0f0" >
-			<when expression='#[payload != null]'>
-				<set-variable doc:name="Set Variable" doc:id="febc1b68-f2f0-4286-ae0d-fe5f396dfa6f" variableName="Username" value="#[payload.username]" mimeType="application/json" />
-				<set-variable doc:name="Set Variable" doc:id="74ce5873-9a5c-4485-91a4-b040aaab494c" variableName="Password" value="#[payload.password]" />
-				<logger level="INFO" doc:name="Logger" doc:id="f5b00a70-d63d-4c3b-ade8-fc69376d4659" message="Username: #[vars.Username], Password: #[vars.Password]" />
-				<http:request method="POST" doc:name="Request" doc:id="5e7aada2-09fa-4f64-8694-64d2be6c5bba" path="/login" config-ref="SalesforceAuthConnection">
-					<http:headers><![CDATA[#[output application/java
----
-{
-	"username" : vars.Username,
-	"password" : vars.Password
-}]]]></http:headers>
-				</http:request>
-				<choice doc:name="is Login successful" doc:id="a9e4e5ca-9857-46dd-acfc-a924d50c7ee1">
-					<when expression="#[payload == true]">
-						<set-payload value='#["98y2j&amp;31iu#3y9183"]' doc:name="Set Payload" doc:id="3bcf6db7-473f-4a42-ba8d-0091f91ef274" />
-					</when>
-				</choice>
-			
-</when>
-			<otherwise >
-				<logger level="INFO" doc:name="Logger" doc:id="04ed3af4-738a-4374-983a-4c6012c3ad7d" message="false"/>
-				<set-payload value="#[payload]" doc:name="Set Payload" doc:id="b39c21ad-6658-4517-82d0-5380410cbc6f" />
-			</otherwise>
-		</choice>
-	</flow>
-	
-	
 	<flow name="loadIndexPage" doc:id="26ce383e-bd96-4b61-a9f4-a24a382fc2f8" >
 		<http:listener doc:name="load index.html" doc:id="93b17725-3db4-4b2b-826c-67c82d200452" config-ref="HTTP_Listener_config" path="/test"/>
 		<parse-template doc:name="parse index.html" doc:id="00d53edf-a3ac-4ca7-9afd-459871e75da0" location="Login\index.html"/>
@@ -275,35 +358,6 @@ payload]]></ee:set-payload>
 		<http:listener doc:name="load bootstrap.min.js" doc:id="dea812a7-3047-4d6d-a9c8-f5c3908b8463" config-ref="HTTP_Listener_config" path="/vendor/bootstrap/js/bootstrap.min.js" />
 		<parse-template doc:name="parse bootstrap.min.js" doc:id="42342cd8-1460-4fbc-955e-5c925b967434" location="Login/vendor/bootstrap/js/bootstrap.min.js" />
 	</flow>
-	<flow name="login" doc:id="7aee3898-9ad1-4e9f-9a35-ca5218f24174" >
-		<http:listener doc:name="/login/{username}/{password}" doc:id="1dbc2377-b214-4ea8-9395-0f8d6ce97abf" config-ref="HTTP_Listener_config" path="/login/{username}/{password}"/>
-		<http:request method="POST" doc:name="Attempt Login to Salesforce" doc:id="62594515-3e3e-4a4b-a798-3e7bce56a358" path="/login" config-ref="SalesforceAuthConnection">
-			<http:headers ><![CDATA[#[output application/java
----
-{
-	"username" : attributes.uriParams.username,
-	"password" : attributes.uriParams.password
-}]]]></http:headers>
-		</http:request>
-	</flow>
-	<flow name="delete:\expense\(organization)\(id):expense-config">
-        <http:listener doc:name="delete:/expense/organization/(organization)/id/(id)" doc:id="03a54b23-2d68-4f9f-8728-dc15e7f329e3" config-ref="HTTP_Listener_config" path="/expense/organization/{organization/id/{id}" allowedMethods="DELETE" />
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="42cd1ed4-a0d5-48ad-a140-7182aa8e0df0" doc:name="Parse organization and id">
-            <ee:variables>
-                <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
-                <ee:set-variable variableName="id"><![CDATA[attributes.uriParams.id]]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<http:request method="DELETE" doc:name="Request" doc:id="bbd34ddd-3cd4-4452-b469-a6b5c97b1fb7" path="/{organization}/id/{id}" config-ref="ExpenseConnection">
-			<http:uri-params><![CDATA[#[output application/java
----
-{
-	"organization" : vars.organization,
-	"id" : vars.id
-}]]]></http:uri-params>
-		</http:request>
-    
-</flow>
 	<flow name="get:\expense\(organization)\summary:expense-config">
         <http:listener doc:name="Listener" doc:id="83e0ed97-857e-43a5-a237-51d2a5995d64" config-ref="HTTP_Listener_config" path="/finances/summary/{organization}"/>
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="2d6c2a22-5187-4e1b-9292-9090826eedde" doc:name="Store organization, start, end">
@@ -338,8 +392,8 @@ payload]]></ee:set-payload>
 				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
             
 </ee:variables>
-        </ee:transform>
-		<http:request method="GET" doc:name="Request" doc:id="ff7231e4-6183-4a77-a6eb-c4c01ae8a94c" config-ref="HTTP_Request_configuration" path="/expenses/{organization}/{start}/{end}">
+    </ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="ff7231e4-6183-4a77-a6eb-c4c01ae8a94c" config-ref="MicroserviceTotalConfiguration" path="/expenses/{organization}/{start}/{end}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -350,35 +404,126 @@ payload]]></ee:set-payload>
 		</http:request>
     
 </flow>
-	<flow name="SALESFORCE-revenue\finances\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
-		<http:listener doc:name="/financessalesforce/{organization}" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
-		<logger level="INFO" doc:name="Logger" doc:id="105fea0d-d4ce-4483-98d9-71cedffa4635" message="/financessalesforce/{organization}"/>
-		<ee:transform doc:name="Transform Message" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
+
+<!-- Flow by Dylan -->
+	<flow name="\search\(organization)\(start)\(end)\(info)" doc:id="95bd89ea-fa8f-4e89-9390-a8a50b725a67" >
+		<http:listener doc:name="Listener" doc:id="fd0b78f7-5869-4fb3-9200-c9955abaf57b" path="/search/{organization}/{start}/{end}/{info}/{data}" config-ref="HTTP_Listener_config"/>
+		<ee:transform doc:name="Parse DataType, InfoType, startDate, endDate" doc:id="06b66301-8f1e-4e07-af74-923300653cff" >
 			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+start: message.attributes.uriParams.start default "1991-01-01",
+end: message.attributes.uriParams.end default "2020-01-01",
+info: message.attributes.uriParams.info default "Revenue",
+organization: message.attributes.uriParams.organization default "Fire"
+}
+]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
-				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start]]></ee:set-variable>
-				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
+				<ee:set-variable variableName="startDate" ><![CDATA[attributes.uriParams.start default "1991-01-01"]]></ee:set-variable>
+				<ee:set-variable variableName="endDate" ><![CDATA[attributes.uriParams.end default "2020-01-01"]]></ee:set-variable>
+				<ee:set-variable variableName="infoType" ><![CDATA[attributes.uriParams.info default "Revenue"]]></ee:set-variable>
+				<ee:set-variable variableName="DataType" ><![CDATA[attributes.uriParams.data default "json"]]></ee:set-variable>
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization default "Fire"]]></ee:set-variable>
 			</ee:variables>
-		</ee:transform>
-		<http:request method="GET" doc:name="Request" doc:id="f09731a4-daf4-442e-b1dd-3725f46fffc4" config-ref="RevenueConnection" path="/{organization}">
-			<http:uri-params ><![CDATA[#[output application/java
+		
+</ee:transform>
+		<choice doc:name="Choice" doc:id="3efcd6e4-813e-437f-a485-c287c2aa12eb" >
+			<when expression='#[vars.infoType ~= "Expense"]'>
+				<http:request method="GET" doc:name="Pull Expense" doc:id="c7c4805c-6df1-4964-87e5-288d73c148d4" config-ref="ExpenseConnection" path="/{organization}">
+					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
 	"organization" : vars.organization
 }]]]></http:uri-params>
-			<http:query-params ><![CDATA[#[output application/java
+					<http:query-params ><![CDATA[#[output application/java
 ---
 {
-	"start" : vars.start,
-	"end" : vars.end
+	"start" : vars.startDate,
+	"end" : vars.endDate
 }]]]></http:query-params>
-		</http:request>    
-</flow>
-	<flow name="SALESFORCE-revenue\finances\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
-		<http:listener doc:name="/financessalesforce/{organization}" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
-		<logger level="INFO" doc:name="Logger" doc:id="105fea0d-d4ce-4483-98d9-71cedffa4635" message="/financessalesforce/{organization}"/>
+				</http:request>
+			</when>
+			<otherwise >
+				<http:request method="GET" doc:name="Pull Revenue" doc:id="7b890271-666a-45a9-b77e-48333c7e588a" config-ref="RevenueConnection" path="/{organization}">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.startDate,
+	"end" : vars.endDate
+}]]]></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="dae4ac06-8f4b-4419-842a-199ff9e3e421" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+//dylan :^)
+payload map
+{
+	organization:$.name,
+	description:$.item,
+	amount:$.cost,
+	date:$.date
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="d6ea5544-a68f-4bf1-88b1-f0aa85bd2ad4" />
+			</otherwise>
+		</choice>
+		<choice doc:name="Choice" doc:id="f4c63cc7-2cc7-40d7-8477-de7dd5157713" >
+			<when expression="#[vars.DataType == 'xml']">
+				<ee:transform doc:name="Convert to XML" doc:id="2e794919-7b90-4188-821b-81c56998baae" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[vars.DataType == 'json']">
+						<ee:transform doc:name="Convert to JSON" doc:id="b9efdd1e-3185-4e44-a593-95ba7c1656e5" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform></when>
+			<when expression="#[vars.DataType == 'csv']">
+						<ee:transform doc:name="Convert to CSV" doc:id="335c7e41-d678-418f-a173-ab063892aa1f" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+								</ee:message>
+				</ee:transform></when>
+			<when expression="#[vars.DataType == 'xlsx']"><ee:transform doc:name="Convert to XLSX" doc:id="7a72acaa-2b7d-44e4-a7f1-44168c39dc23" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/xlsx
+---
+payload
+]]></ee:set-payload>
+								</ee:message>
+				</ee:transform></when>
+			<otherwise>
+				<raise-error doc:name="Raise error" doc:id="250f27d7-951a-451b-a3d6-6dc021dffe85" type="ORDER:INVALID_DATA" description="incorrect file type"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="SALESFORCE-finances\revenue\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
+		<http:listener doc:name="/finances/revenue/(organization)" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
 		<ee:transform doc:name="Store organization, start, end" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
 			<ee:message >
 			</ee:message>
@@ -401,18 +546,41 @@ payload]]></ee:set-payload>
 	"end" : vars.end
 }]]]></http:query-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger" doc:id="f865256a-06ce-441b-942c-ef93cbba9520" />
+	</flow>
+	<flow name="SALESFORCE-finances\expenses\(organization)" doc:id="3220f7c9-f384-4b26-a47c-3acd9aff26af" >
+		<http:listener doc:name="/finances/expenses/(organization)" doc:id="82ae97a3-c4d5-4490-8e66-4deda36f5009" config-ref="HTTP_Listener_config" path="/finances/expenses/{organization}"/>
+		<ee:transform doc:name="Store organization, start, end" doc:id="2fe4f98c-613b-49bd-9379-c79fe0dcdc55" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="start" ><![CDATA[attributes.queryParams.start default "1991-01-01"]]></ee:set-variable>
+				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end default "2020-01-01"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="GET expenses by organization" doc:id="156289d7-5c70-40a7-81e3-7c916df839a4" config-ref="RevenueConnection" path="/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.start,
+	"end" : vars.end
+}]]]></http:query-params>
+		</http:request>
 	</flow>
 	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" >
 		<http:listener doc:name="getAssetsByOrganization" doc:id="c864561c-8ceb-4f64-b406-4022b87e9293" config-ref="HTTP_Listener_config" path="/assets/{organization}"/>
-		<ee:transform doc:name="Transform Message" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
+		<ee:transform doc:name="Store organization" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="e1957d6e-79aa-4920-bfc5-a2d3fdab9a1e" />
 		<http:request method="GET" doc:name="Get Assets from Salesforce" doc:id="d233f571-8538-4553-a6a4-7026b224d252" config-ref="RevenueConnection" path="/name/{organization}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -420,7 +588,7 @@ payload]]></ee:set-payload>
 	"organization" : vars.organization
 }]]]></http:uri-params>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="2b1418f4-05a4-4eba-ab5a-1bfda6e3e9ba" >
+		<ee:transform doc:name="Store assets to JSON" doc:id="2b1418f4-05a4-4eba-ab5a-1bfda6e3e9ba" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -431,121 +599,166 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="grabStockRevenue" doc:id="8b7f87b9-8bf0-49a1-a773-38db23b9b7c0" >
+		<http:listener doc:name="grabStockRevenue" doc:id="3375a9cb-5362-472d-be12-af810d3c47c4" config-ref="HTTP_Listener_config" path="/stock/{organization}/revenue"/>
+		<http:request method="GET" doc:name="Grab StockRevenue by Organization" doc:id="c08b41a4-ef87-42e0-9e0b-039655b2f524" config-ref="MicroserviceStockConfiguration" path="/aggregate/{organization}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : attributes.uriParams.organization
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
 	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" >
 		<http:listener doc:name="grabStockExpenses" doc:id="50293c85-4600-4819-9833-08a70fad463f" config-ref="HTTP_Listener_config" path="/stock/{organization}/expense"/>
-		<ee:transform doc:name="Store organization" doc:id="e29db558-536c-44a2-8d00-37a0b0a20f33" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<http:request method="GET" doc:name="Get Stocks by Organization" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="SalesforceStockConfiguration" path="/{organization}" outputMimeType="application/json">
+		<http:request method="GET" doc:name="Get StockExpenses by Organization" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="SalesforceStockConfiguration" path="/{organization}" outputMimeType="application/json">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
-	"organization" : vars.organization
+	"organization" : attributes.uriParams.organization
 }]]]></http:uri-params>
 		</http:request>
-		<logger level="INFO" doc:name="Logger" doc:id="cd490054-664a-48d2-89d7-498e1e9f57b1" message="#[payload]"/>
-		<ee:transform doc:name="Collate amount spent on stocks" doc:id="8eb9266f-2387-466e-b238-0b77ab170204">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-var payload={
-"addresses": [
-  {
-    "type": "PERM",
-    "city": "Warsaw",
-    "street": "Jerozolimskie",
-    "no": 150,
-    "postal": "12-233"
-  },
-  {
-    "type": "LIVI",
-    "city": "Warsaw",
-    "street": "Asfaltowa",
-    "no": 111,
-    "postal": "99-233"
-  }]
-}
----
-{
-	permanent: payload.addresses[?($.'type' == "PERM")][0] match{
-		case is Object -> {
-			city: $.city,
-			street: $.street ++ ' no. ' ++ $.no,
-			postalCode: $.postal
-		}
-		else -> null
-	},
-	living: payload.addresses[?($.'type' == "LIVI")][0] match{
-		case is Object -> {
-			city: $.city,
-			street: $.street ++ ' no. ' ++ $.no,
-			postalCode: $.postal
-		}
-		else -> null		
-	}
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
 	</flow>
-	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" >
-		<http:listener doc:name="getAssetsByOrganization" doc:id="c864561c-8ceb-4f64-b406-4022b87e9293" config-ref="HTTP_Listener_config" path="/assets/{organization}"/>
-		<ee:transform doc:name="Transform Message" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
+	<flow name="CreateBuildingExpense" doc:id="5e7e04f2-4e56-43f5-a2b4-545c92bb07fc" >
+		<http:listener doc:name="createBuildingExpense" doc:id="73551d28-bfa7-4736-899a-813c00da862d" config-ref="HTTP_Listener_config" path="/building/{organization}/{sqfeet}"/>
+		<ee:transform doc:name="Save organization and sqfeet" doc:id="ecaaef67-63ed-4746-96ea-fb79072eaef5" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
+				<ee:set-variable variableName="squarefeet" ><![CDATA[attributes.uriParams.sqfeet]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="e1957d6e-79aa-4920-bfc5-a2d3fdab9a1e" />
-		<http:request method="GET" doc:name="Get Assets from Salesforce" doc:id="d233f571-8538-4553-a6a4-7026b224d252" config-ref="RevenueConnection" path="/name/{organization}">
+		<http:request method="GET" doc:name="Get Building Quote" doc:id="c900e9f9-5be6-462e-acb4-c2fcea795fe2" path="/building/{sqfeet}" config-ref="MicroserviceQuoteConfiguration">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
-	"organization" : vars.organization
+	"sqfeet" : vars.squarefeet
 }]]]></http:uri-params>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="2b1418f4-05a4-4eba-ab5a-1bfda6e3e9ba" >
+		<ee:transform doc:name="Save amount" doc:id="977fe7cd-76cf-49db-8ab0-6e27596c758e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="amount" ><![CDATA[payload.quote]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Payload for Post" doc:id="04d34125-8932-4e0e-b374-185129b734f4" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	assets: payload.item
+	organization: vars.organization,
+	amount: vars.amount,
+	date: now() as String {format: "yyyy-MM-dd"},
+	description: "New building",
+	quantity: 1
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<http:request method="POST" doc:name="POST new Building Cost" doc:id="3efdee46-fe21-4cd9-9da1-49c0881a5088" config-ref="ExpenseConnection" path="/" />
 	</flow>
-	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" >
-		<http:listener doc:name="grabStockExpenses" doc:id="50293c85-4600-4819-9833-08a70fad463f" config-ref="HTTP_Listener_config" path="/stock/{organization}/expense"/>
-		<ee:transform doc:name="Transform Message" doc:id="e29db558-536c-44a2-8d00-37a0b0a20f33" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="organization" ><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<http:request method="GET" doc:name="Request" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="StockConfiguration" path="/{organization}" outputMimeType="application/json">
-			<http:uri-params ><![CDATA[#[output application/java
----
-{
-	"organization" : vars.organization
-}]]]></http:uri-params>
-		</http:request>
-		<logger level="INFO" doc:name="Logger" doc:id="cd490054-664a-48d2-89d7-498e1e9f57b1" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="8eb9266f-2387-466e-b238-0b77ab170204" >
+	<flow name="Login" doc:id="ba703fc1-933c-4af3-a99a-135f5f48caf1" >
+		<http:listener doc:name="Login" doc:id="99bf7776-60f9-472b-b69f-1e500987715c" config-ref="HTTP_Listener_config" path="/login" outputMimeType="application/json"/>
+		<ee:transform doc:name="Transform Message" doc:id="42da4f37-3de5-405e-a3f6-41e0715d1438" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-	stockvalues: payload.amountSpent
-}]]></ee:set-payload>
+payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<choice doc:name="Choice" doc:id="8c2dd744-8a6d-4572-93aa-1a4384baeb94" >
+			<when expression='#[payload != null]'>
+				<set-variable doc:name="Set Username" doc:id="cc1be470-61a5-487d-a1bd-a9dcf23265d7" variableName="Username" value="#[payload.username]" mimeType="application/json" />
+				<set-variable doc:name="Set Password" doc:id="284c9b73-ea40-471a-8bff-f7e86aaf4760" variableName="Password" value="#[payload.password]" />
+				<logger level="INFO" doc:name="Logger" doc:id="7149de66-a971-449f-8ef3-5282e7d6423e" message="Username: #[vars.Username], Password: #[vars.Password]" />
+				<http:request method="POST" doc:name="Request" doc:id="9d2b55af-c905-4864-84fe-4318f5a104d7" path="/login" config-ref="SalesforceAuthConnection">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"username" : vars.Username,
+	"password" : vars.Password
+}]]]></http:headers>
+				</http:request>
+				<choice doc:name="Choice" doc:id="5d584fda-08dd-4149-a81e-78daa1eddcbe" >
+					<when expression="#[payload == true]">
+						<set-payload value='#["kashdqi3e3kn38"]' doc:name="Set Token String" doc:id="f0a7c908-d255-4a16-9029-484542224579" />
+					</when>
+					<otherwise >
+						<set-payload value='Access denied' doc:name="Set Access Denied Message" doc:id="73b6124f-84df-4350-983c-974776e3b864" />
+					</otherwise>
+				</choice>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="e87aaf1b-66c4-41a5-89c4-1548a2865493" message="false"/>
+				<set-payload value="#[false]" doc:name="Set Payload" doc:id="f57056d1-2d3d-4d36-9cd9-a586a6468ef8" />
+			
+</otherwise>
+		</choice>
 	</flow>
-
+	<flow name="projections" doc:id="f137bac8-24ed-430c-a66b-c45c06be5716" >
+		<http:listener doc:name="Listener" doc:id="a490ccb4-6458-4581-b180-b29d3afbe703" config-ref="HTTP_Listener_config" path="/projections/{department}/{info}/{start}/{end}"/>
+		<choice doc:name="has Expense or Revenue" doc:id="9679bf4b-a46b-4787-9d7d-e430cba4706a" >
+			<when expression='#[message.attributes.uriParams.info == "revenue" or message.attributes.uriParams.info == "expense"]'>
+				<http:request method="GET" doc:name="Create projections" doc:id="86a376f8-73bd-4dd5-8f2c-465c05bffae9" path="#['/projections/'++ message.attributes.uriParams.department as String ++ '/' ++ message.attributes.uriParams.info as String ++ '?startYear='  ++ message.attributes.uriParams.start as String ++ '&amp;endYear='  ++ message.attributes.uriParams.end as String]" config-ref="FundsConfiguration">
+					<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></http:uri-params>
+				</http:request>
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="1a695ee7-93c7-4003-94f5-8e75974e253d" type="ORDER:INVALID_DATA" description="Type is invalid. Please use type revenue or expense."/>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e444642f-9c50-4b88-87b2-389ef6ffe778" >
+				<set-payload value="You must select Revenue or Expenses" doc:name="Set Error Response Message" doc:id="d6560d65-6c38-41f7-8d15-25ffbee8552e" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="Register" doc:id="18d35856-4acf-4c3e-b37f-36273bc02d3e" >
+		<http:listener doc:name="Register" doc:id="cf37187f-c6c4-46e2-acbc-8bbabe4cbe51" config-ref="HTTP_Listener_config" path="/signup" outputMimeType="application/json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9727b39d-904f-4f6d-874d-1f3b027d5e23" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="397b89d0-3c68-4127-bda1-b350d581a8dc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="is Payload null" doc:id="8460cf4a-9566-4b19-8cbc-4746e2c4d13e" >
+			<when expression='#[payload != null]'>
+				<set-variable doc:name="Set Username" doc:id="a77ecfef-3dfb-4c04-b73d-7ca880e63fa3" variableName="Username" value="#[payload.username]" mimeType="application/json" />
+				<set-variable doc:name="Set Password" doc:id="ecd55a40-40de-48cb-a14f-1e01a42b78b7" variableName="Password" value="#[payload.password]" />
+				<logger level="INFO" doc:name="Logger" doc:id="9caeaaf4-7b19-4ad6-b3f9-3edf134d74ee" message="Username: #[vars.Username], Password: #[vars.Password], Payload: #[payload]" />
+				<http:request method="POST" doc:name="Request" doc:id="565f066e-0bbd-4ab6-b5e8-532fc76551f8" path="/register" config-ref="SalesforceAuthConnection">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"username" : vars.Username,
+	"password" : vars.Password
+}]]]></http:headers>
+				</http:request>
+				<choice doc:name="is Payload true" doc:id="a439b970-d2c1-460a-9078-ed4bae18abe1" >
+					<when expression="#[payload == true]">
+						<logger level="INFO" doc:name="Logger" doc:id="1e2bfa5b-85fd-431d-b0d3-4b3816978ce2" message="Payload at this point #[payload]"/>
+						<set-payload value='#["kashdqi3e3kn38"]' doc:name="Set Payload" doc:id="cb250514-f66b-4753-bff7-1efec916dc1c" />
+					</when>
+					<otherwise >
+						<logger level="INFO" doc:name="Log in false response" doc:id="d3877a6b-09c1-4398-99c4-ba920a00e281" message="Payload at this default #[payload]"/>
+						<set-payload value='Invalid Registration, Try an alternate username' doc:name="Set Payload" doc:id="535c2545-20be-4986-a9bc-1f7d73041c35" />
+					</otherwise>
+				</choice>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Log Null Payload" doc:id="4b3a4567-6fc9-41c3-9a34-260bd22a3da3" message="Logging for false payload"/>
+				<set-payload value="#[false]" doc:name="Set False Message" doc:id="1e3ef33d-e3e5-408c-ba84-75fb1e35f5fe" />
+			</otherwise>
+		</choice>
+	</flow>
 </mule>

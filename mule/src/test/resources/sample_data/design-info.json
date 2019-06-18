@@ -5,6 +5,10 @@
     },
     "8e5e6bdc-4ab5-469e-b272-0872f25dbb53": {
       "payload": "sample_data/defaultstringtype.dwl"
+    },
+    "04d34125-8932-4e0e-b374-185129b734f4": {
+      "vars-organization": "sample_data/unknown.dwl",
+      "vars-amount": "sample_data/unknown_1.dwl"
     }
   }
 }
