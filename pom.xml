@@ -1,25 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                         https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<groupId>com.revature.texas-mule.project-3</groupId>
 	<artifactId>mule-city-comptroller</artifactId>
 	<version>0.0.0</version>
 	<packaging>pom</packaging>
-
+	
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
-
+	
 	<modules>
-		<module>salesforce/pom.xml</module> 
-		<module>devops/pom.xml</module>          
-		<module>microservices/pom.xml</module>    
-		<module>mule/pom.xml</module>             
+		<module>salesforce/pom.xml</module>
+		<module>devops/pom.xml</module>
+		<module>microservices/pom.xml</module>
+		<module>mule/pom.xml</module>
 	</modules>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -34,7 +34,7 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -60,8 +60,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- JaCoCo Maven Plugin -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
+	
 	<name>mule-city-comptroller</name>
 </project>
