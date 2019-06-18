@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -9,15 +10,11 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.revature</groupId>
-	<artifactId>total-expenses</artifactId>
+	<artifactId>total-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-<<<<<<< HEAD
 	<packaging>war</packaging>
-=======
-	<packaging>jar</packaging>
->>>>>>> 011180df67f1673b7a3458ed595bf23e5829bab0
-	<name>total-expenses</name>
-	<description>Total Expenses project for Project 3 Microservice Team</description>
+	<name>total-service</name>
+	<description>Total-Service project for Project 3 Microservice Team</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -26,20 +23,13 @@
 
 	<dependencies>
 		<dependency>
-<<<<<<< HEAD
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-=======
->>>>>>> 011180df67f1673b7a3458ed595bf23e5829bab0
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
 		</dependency>
 
 		<dependency>
