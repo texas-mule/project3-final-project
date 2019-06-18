@@ -1,0 +1,174 @@
+#%RAML 1.0
+---
+
+title: Revenue
+
+
+/revenue:
+  
+  /add:
+    /{name}:
+      /{cost}:
+        /{item}:
+          post:
+            description: This route adds a revenue entry to the database
+            responses:
+              200:
+                body:
+                  application/json:
+                    example: |
+                      {
+                        "Status":"Completed"
+                        }
+
+  /name:
+    /{name}:
+      get:
+        description: This route takes industry name as a uri param returns the revenue for the name
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                     [ {
+                        "name": "fire",
+                        "item": "truck",
+                        "cost": 1000,
+                        "date": "2019-06-07"
+                        },
+                        {
+                        "name": "fire",
+                        "item": "water",
+                        "cost": 1123,
+                        "date": "2019-05-05"
+                        },
+                        {
+                        "name": "fire",
+                        "item": "Life insurance",
+                        "cost": 15000,
+                        "date": "2019-06-03"
+                        }]
+
+  /{organization}:
+    get:
+      description: This route takes industry name as a uri param returns the revenue for the name
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                   [ {
+                      "name": "fire",
+                      "item": "truck",
+                      "cost": 1000,
+                      "date": "2019-06-07"
+                      },
+                      {
+                      "name": "fire",
+                      "item": "water",
+                      "cost": 1123,
+                      "date": "2019-05-05"
+                      },
+                      {
+                      "name": "fire",
+                      "item": "Life insurance",
+                      "cost": 15000,
+                      "date": "2019-06-03"
+                      }]
+
+  /Abovecost:
+    /{cost}:
+      get:
+        description: This route takes an amount as a uri param returns entries above it
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                     [ {
+                      "name": "fire",
+                      "item": "truck",
+                      "cost": 1000,
+                      "date": "2019-06-07"
+                      },
+                      {
+                      "name": "fire",
+                      "item": "water",
+                      "cost": 1123,
+                      "date": "2019-05-05"
+                      },
+                      {
+                      "name": "fire",
+                      "item": "Life insurance",
+                      "cost": 15000,
+                      "date": "2019-06-03"
+                      }]
+
+  /betweenDates:
+    get:
+        queryParameters:
+          start:
+            displayName: Start Date
+            type: Date
+            example: 2019-06-07
+            required: true
+          end:
+            displayName: End Date
+            type: Date
+            example: 2019-05-05
+            required: true
+
+      description: This route takes a username as a uri param returns the portfolio for the user
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                  [ {
+                  "name": "fire",
+                  "item": "truck",
+                  "cost": 1000,
+                  "date": "2019-06-07"
+                  },
+                  {
+                  "name": "fire",
+                  "item": "water",
+                  "cost": 1123,
+                  "date": "2019-05-05"
+                  },
+                  {
+                  "name": "fire",
+                  "item": "Life insurance",
+                  "cost": 15000,
+                  "date": "2019-06-03"
+                  }]
+ 
+  /Belowcost:
+    /{cost}:
+      get:
+        description: This route takes an amount as a uri param returns entries below it
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                       [
+                        {
+                        "name": "fire",
+                        "item": "truck",
+                        "cost": 1000,
+                        "date": "2019-06-07"
+                        },
+                        {
+                        "name": "fire",
+                        "item": "water",
+                        "cost": 1123,
+                        "date": "2019-05-05"
+                        },
+                        {
+                        "name": "fire",
+                        "item": "Life insurance",
+                        "cost": 15000,
+                        "date": "2019-06-03"
+                        }
+                        ]

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                       https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.revature.texas-mule.project-3</groupId>
-	<artifactId>mule-city-comptroller</artifactId>
+	<artifactId>city-comptroller</artifactId>
 	<version>0.0.0</version>
 	<packaging>pom</packaging>
 	
@@ -12,26 +12,17 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
-	
 	<modules>
 		<module>salesforce/pom.xml</module>
 		<module>devops/pom.xml</module>
 		<module>microservices/pom.xml</module>
 		<module>mule/pom.xml</module>
 	</modules>
-	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.connectors</groupId>
-			<artifactId>mule-http-connector</artifactId>
-			<version>1.5.3</version>
-			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
 	
@@ -40,25 +31,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<!-- JaCoCo Maven Plugin -->
 			<plugin>

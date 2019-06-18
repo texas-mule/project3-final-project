@@ -19,13 +19,13 @@ public class StockController {
 	StockService stockService;
 	
 	@GetMapping("/{symbol}")
-	public double getStockPrice(@PathVariable("symbol") final String symbol){
+	public String getStockPrice(@PathVariable("symbol") final String symbol){
 		
 		return stockService.getStockPrice(symbol);
 	}
 	
-	@GetMapping("/aggregate/{organization}")
-	public HashMap<String, Department> aggregatePortfolio(@PathVariable("organization") final String organization){
+	@GetMapping("/aggregate/{department}")
+	public HashMap<String, Department> aggregatePortfolio(@PathVariable("department") final String organization){
 	
 		return stockService.aggregateOrgStock(organization);
 	}
