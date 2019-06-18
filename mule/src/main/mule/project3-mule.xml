@@ -114,8 +114,7 @@ Requires:
 			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0bcdbc7c-87d9-406f-904d-c83eda41d962" type="EMAIL:SEND">
 				<parse-template doc:name="Display InvalidEmail HTML" doc:id="33345b69-d97c-4bb7-928d-bec13553b968" location="C:\Users\RCP\Documents\Revature\project3responsetest.html"/>
 			</on-error-continue>
-		</error-handler>
-	
+		</error-handler>	
 </flow>
 	<sub-flow name="LoadAllData" doc:id="3b61aca0-b305-4057-81ff-a9cbccc308a1" >
 		<flow-ref doc:name="LoadFire" doc:id="293329b3-0047-4bee-89dc-33edf35467b7" name="PullFireInformation"/>
@@ -393,7 +392,7 @@ fun colorize(referenceVal: Number) =
 				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
             
 </ee:variables>
-        </ee:transform>
+    </ee:transform>
 		<http:request method="GET" doc:name="Request" doc:id="ff7231e4-6183-4a77-a6eb-c4c01ae8a94c" config-ref="MicroserviceTotalConfiguration" path="/expenses/{organization}/{start}/{end}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
