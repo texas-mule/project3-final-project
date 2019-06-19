@@ -1,6 +1,12 @@
 # Created by https://www.gitignore.io/api/java,maven,eclipse
 # Edit at https://www.gitignore.io/?templates=java,maven,eclipse
 
+revenue-boot-app/ApplicationContext.xml
+revenue-boot-app/application.revenue.properties
+revenue-boot-app/ebs/
+wsdls-and-jars/
+actualsalesforcelogindetails.txt
+
 .DS_Store
 
 ### Eclipse ###

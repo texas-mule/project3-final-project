@@ -1,0 +1,177 @@
+#%RAML 1.0
+title: Expense
+/:
+  post:
+    description: Add an expense
+    body:
+      application/json:
+        example: |
+          {
+            "organization": "Fire Department",
+            "amount": 800.00,
+            "date": "2019-04-01",
+            "description": "pencil",
+            "quantity": 30
+          }
+    responses:
+      201:
+  /{organization}:
+    get:
+      queryParameters:
+        start:
+          displayName: Start Date
+          type: date-only
+          description: Only show expenses starting on this date.
+          example: 2019-01-01
+        end:
+          displayName: End Date
+          type: date-only
+          description: Only show expenses ending on this date.
+          example: 2019-03-31
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                [
+                  {
+                    "id": 9,
+                    "organization": "Fire Department",
+                    "description": "Ladder Truck",
+                    "amount": 7435963.45,
+                    "date": "2019-06-08",
+                    "quantity": 4
+                  },
+                  {
+                    "id": 8,
+                    "organization": "Fire Department",
+                    "description": "Ladder Truck",
+                    "amount": 9015438.75,
+                    "date": "2019-06-09",
+                    "quantity": 8
+                  }
+                ]
+    /summary:
+      get:
+        description: get expenses summarized over the time period
+        queryParameters:
+          start:
+            displayName: Start Date
+            type: date-only
+            description: Only show expenses starting on this date.
+            example: 2019-01-01
+          end:
+            displayName: End Date
+            type: date-only
+            description: Only show expenses ending on this date.
+            example: 2019-03-31
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "organization": "Fire Department",
+                      "amount": "1.64514022E7",
+                      "description": "Ladder Truck",
+                      "quantity": 12
+                    }
+                  ]
+    /date/{date}:
+      get:
+        description: get all expenses from the given date.
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "id": 9,
+                      "organization": "Fire Department",
+                      "description": "Ladder Truck",
+                      "amount": 7435963.45,
+                      "date": "2019-06-08",
+                      "quantity": 4
+                    }
+                  ]
+    /description/{description}:
+      get:
+        description: get all expenses matching the given description.
+        queryParameters:
+          start:
+            displayName: Start Date
+            type: date-only
+            description: Only show expenses starting on this date.
+            example: 2019-01-01
+          end:
+            displayName: End Date
+            type: date-only
+            description: Only show expenses ending on this date.
+            example: 2019-03-31
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  [
+                    {
+                      "id": 4,
+                      "name": "Fire Department",
+                      "amount": 45.00,
+                      "date": "2019-04-01T00:00:00.000+0000",
+                      "description": "pencil",
+                      "quantity": 30
+                    },
+                    {
+                      "id": 3,
+                      "name": "Fire Department",
+                      "amount": 35.00,
+                      "date": "2019-01-01T00:00:00.000+0000",
+                      "description": "pencil",
+                      "quantity": 30
+                    },
+                    {
+                      "id": 2,
+                      "name": "Fire Department",
+                      "amount": 40.00,
+                      "date": "2018-10-01T00:00:00.000+0000",
+                      "description": "pencil",
+                      "quantity": 30
+                    }
+                  ]
+    /id/{id}:
+      get:
+        description: get expense by id.
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                  {
+                    "id": 1,
+                    "name": "Fire Department",
+                    "amount": 85.00,
+                    "date": "2018-07-01T00:00:00.000+0000"
+                    "description": "Ladder Truck",
+                    "quantity": 1
+                  }
+      put:
+        description: overwrite an expense
+        body:
+          application/json:
+            example: |
+              {
+                "organization": "Fire Department",
+                "amount": 800.00,
+                "date": "2019-04-01",
+                "description": "pencil",
+                "quantity": 30
+              }
+        responses:
+          200:     
+      delete:
+        description: delete an expense
+        responses:
+          204:
