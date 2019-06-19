@@ -105,6 +105,7 @@ if (funds < 0) ('<font color=#FF0000>-\$' ++ abs(funds) ++ '</font>')
 
 Requires:
 {email}				query param		sets email destination
+
 {departmentid}	uri param			sets department destination">
 			<email:to-addresses>
 				<email:to-address value="#[attributes.queryParams.email]" />
@@ -370,6 +371,7 @@ Parameters
 {organization}				queryParam		denotes the organization whose expenses are pulled
 ">
         <http:listener doc:name="Listener" doc:id="83e0ed97-857e-43a5-a237-51d2a5995d64" config-ref="HTTP_Listener_config" path="/finances/summary/{organization}"/>
+
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="2d6c2a22-5187-4e1b-9292-9090826eedde" doc:name="Store organization, start, end">
             <ee:variables>
                 <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
@@ -400,6 +402,7 @@ Parameter
 {start}				queryParam		denotes the start date of the timeframe for pulling data
 {end}				queryParam		denotes the end date of the timeframe for pulling data">
         <http:listener doc:name="Listener" doc:id="58836feb-551a-41ec-9ef2-29917c9423a6" config-ref="HTTP_Listener_config" path="/finances/{organization}"/>
+
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="1c0e9381-7f77-4883-961e-a3026104555f" doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="organization"><![CDATA[attributes.uriParams.organization]]></ee:set-variable>
@@ -407,7 +410,7 @@ Parameter
 				<ee:set-variable variableName="end" ><![CDATA[attributes.queryParams.end]]></ee:set-variable>
             
 </ee:variables>
-        </ee:transform>
+    </ee:transform>
 		<http:request method="GET" doc:name="Request" doc:id="ff7231e4-6183-4a77-a6eb-c4c01ae8a94c" config-ref="MicroserviceTotalConfiguration" path="/expenses/{organization}/{start}/{end}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
