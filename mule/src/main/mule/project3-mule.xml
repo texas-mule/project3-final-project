@@ -45,13 +45,18 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<http:request-config name="MicroserviceQuoteConfiguration" doc:name="HTTP Request configuration" doc:id="f10729a7-cab9-4d7e-9926-ececad2dca26" basePath="/quoting-service/quote-service" >
 		<http:request-connection host="${microservice.url}" port="8762" />
 	</http:request-config>
-	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" >
-		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice/{departmentid}" doc:description="Flow that sends out an Invoice in an email
+	<flow name="sendEmail" doc:id="2bb154c9-28a5-45c3-b7e8-5e4fabf7e349" doc:description="Retrieves all revenue and expenses for every department, calculates the overall funds, then outputs all data in an email format
 
-Requires: 
-{departmentid}	uri param			departmentid of the recipient (allows for custom formatting per department)
+Parameters
 {email}				query param		recipient email address
-" allowedMethods="GET" outputMimeType="application/json"/>
+{start}				query param		the start date of timerange for pulling data
+{end}				query param		the end date of timerange for pulling data">
+		<http:listener doc:name="/invoice/{department}" doc:id="ca75f5be-14ca-45b2-8f3b-51241dc33001" config-ref="HTTP_Listener_config" path="/invoice" doc:description="Retrieves all revenue and expenses for every department, calculates the overall funds, then outputs all data in an email format
+
+Parameters
+{email}				query param		recipient email address
+{start}				query param		the start date of timerange for pulling data
+{end}				query param		the end date of timerange for pulling data" allowedMethods="GET" outputMimeType="application/json"/>
 		<ee:transform doc:name="Parse Start and End Date" doc:id="fd68ad06-1505-4eae-a40f-1754ca2e7a60">
 			<ee:message>
 			</ee:message>
@@ -117,14 +122,14 @@ Requires:
 		</error-handler>
 	
 </flow>
-	<sub-flow name="LoadAllData" doc:id="3b61aca0-b305-4057-81ff-a9cbccc308a1" >
+	<sub-flow name="LoadAllData" doc:id="3b61aca0-b305-4057-81ff-a9cbccc308a1" doc:description="Subflow for Email Flow that triggers all subflows to pull individual department information">
 		<flow-ref doc:name="LoadFire" doc:id="293329b3-0047-4bee-89dc-33edf35467b7" name="PullFireInformation"/>
 		<flow-ref doc:name="LoadHospital" doc:id="472a2517-40a6-411d-b819-b4019ddda72c" name="PullHospitalInformation"/>
 		<flow-ref doc:name="LoadPolice" doc:id="73b160c8-c0e2-44f4-b7b0-fc1771d9dc11" name="PullPoliceInformation"/>
 		<flow-ref doc:name="LoadParks" doc:id="a83cd640-350d-4704-ad90-ec66519810b8" name="PullParksInformation"/>
 		<flow-ref doc:name="LoadSewage" doc:id="addbe0ef-d157-449f-bb04-5a0bb3b96daa" name="PullSewageInformation"/>
 	</sub-flow>
-	<sub-flow name="PullFireInformation" doc:id="443bae36-4627-4c5c-b151-97d57e8e1b5d">
+	<sub-flow name="PullFireInformation" doc:id="443bae36-4627-4c5c-b151-97d57e8e1b5d" doc:description="Subflow triggered by LoadAllData that pulls all Fire Information for the email">
 		<http:request method="GET" doc:name="FireExpense" doc:id="da45142f-0521-4d1d-ab30-56bb33bbab88" config-ref="MicroserviceTotalConfiguration" target="fireExpense" path="/expenses/Fire/{start}/{end}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -167,7 +172,7 @@ fun colorize(referenceVal: Number) =
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
-	<sub-flow name="PullHospitalInformation" doc:id="0bf20e2d-bbf9-4436-8276-373e94ed0fae" >
+	<sub-flow name="PullHospitalInformation" doc:id="0bf20e2d-bbf9-4436-8276-373e94ed0fae" doc:description="Subflow triggered by LoadAllData that pulls all Hospital Information for the email">
 		<http:request method="GET" doc:name="HospitalExpense" doc:id="55ab68d8-1b9f-4de2-b59e-8a3067deb018" config-ref="MicroserviceTotalConfiguration" path="/expenses/Hospital/{start}/{end}" target="hospitalExpense">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -209,7 +214,7 @@ fun colorize(referenceVal: Number) =
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
-	<sub-flow name="PullPoliceInformation" doc:id="1aaa8746-568e-405e-a74b-05490cca3a67">
+	<sub-flow name="PullPoliceInformation" doc:id="1aaa8746-568e-405e-a74b-05490cca3a67" doc:description="Subflow triggered by LoadAllData that pulls all Police Information for the email">
 		<http:request method="GET" doc:name="PoliceExpense" doc:id="ed9c9c94-987d-496f-9776-f318011ef844" config-ref="MicroserviceTotalConfiguration" path="/expenses/Police/{start}/{end}" target="policeExpense" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -293,7 +298,7 @@ fun colorize(referenceVal: Number) =
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
-	<sub-flow name="PullSewageInformation" doc:id="b4ff1a8d-2f14-4e96-a76a-a5357454269c">
+	<sub-flow name="PullSewageInformation" doc:id="b4ff1a8d-2f14-4e96-a76a-a5357454269c" doc:description="Subflow triggered by LoadAllData that pulls all Sewage Information for the email">
 		<http:request method="GET" doc:name="SewageExpense" doc:id="3644e2f5-1fe4-4a64-96d1-5c04baf0f35b" config-ref="MicroserviceTotalConfiguration" path="/expenses/Sewage/{start}/{end}" target="sewageExpense" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -359,7 +364,11 @@ fun colorize(referenceVal: Number) =
 		<http:listener doc:name="load bootstrap.min.js" doc:id="dea812a7-3047-4d6d-a9c8-f5c3908b8463" config-ref="HTTP_Listener_config" path="/vendor/bootstrap/js/bootstrap.min.js" />
 		<parse-template doc:name="parse bootstrap.min.js" doc:id="42342cd8-1460-4fbc-955e-5c925b967434" location="Login/vendor/bootstrap/js/bootstrap.min.js" />
 	</flow>
-	<flow name="get:\expense\(organization)\summary:expense-config">
+	<flow name="get:\expense\(organization)\summary:expense-config" doc:description="GET request to Expense service to retrieve summary of expenditures by a department
+
+Parameters
+{organization}				queryParam		denotes the organization whose expenses are pulled
+">
         <http:listener doc:name="Listener" doc:id="83e0ed97-857e-43a5-a237-51d2a5995d64" config-ref="HTTP_Listener_config" path="/finances/summary/{organization}"/>
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="2d6c2a22-5187-4e1b-9292-9090826eedde" doc:name="Store organization, start, end">
             <ee:variables>
@@ -384,7 +393,12 @@ fun colorize(referenceVal: Number) =
 		</http:request>
     
 </flow>
-	<flow name="MS-Total\finances\(organization)">
+	<flow name="MS-Total\finances\(organization)" doc:description="Makes an HTTP GET request to the Total Microservice to retrieve Expense information
+
+Parameter
+{organization}		queryParam		denotes the organization whose expenses are pulled
+{start}				queryParam		denotes the start date of the timeframe for pulling data
+{end}				queryParam		denotes the end date of the timeframe for pulling data">
         <http:listener doc:name="Listener" doc:id="58836feb-551a-41ec-9ef2-29917c9423a6" config-ref="HTTP_Listener_config" path="/finances/{organization}"/>
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="1c0e9381-7f77-4883-961e-a3026104555f" doc:name="Transform Message">
             <ee:variables>
@@ -407,8 +421,18 @@ fun colorize(referenceVal: Number) =
 </flow>
 
 <!-- Flow by Dylan -->
-	<flow name="\search\(organization)\(start)\(end)\(info)" doc:id="95bd89ea-fa8f-4e89-9390-a8a50b725a67" >
-		<http:listener doc:name="Listener" doc:id="fd0b78f7-5869-4fb3-9200-c9955abaf57b" path="/search/{organization}/{start}/{end}/{info}/{data}" config-ref="HTTP_Listener_config"/>
+	<flow name="\search\(organization)\(start)\(end)\(info)\(data)" doc:id="95bd89ea-fa8f-4e89-9390-a8a50b725a67" doc:description="Searches the database for Revenue or Expenses (either Collated or Itemized) by department with desired output type
+
+Parameters
+{organization}			uriParam			denotes the department whose information will be pulled
+{start}					uriParam			denotes the start date of the timeframe for pulling data
+{end}					uriParam			denotes the end date of the timeframe for pulling data
+{infoType}				uriParam			sets the information type that the user is looing for (Revenue-Itemized, Expense-Collated, etc)
+{data}					uriParam			sets the output data type for the search (json, csv, etc)
+
+Outputs 
+{infoType} information from {organization} database in timeframe {start} to {end} in {data} format ">
+		<http:listener doc:name="Search Departments" doc:id="fd0b78f7-5869-4fb3-9200-c9955abaf57b" path="/search/{organization}/{start}/{end}/{info}/{data}" config-ref="HTTP_Listener_config"/>
 		<ee:transform doc:name="Parse DataType, InfoType, startDate, endDate" doc:id="06b66301-8f1e-4e07-af74-923300653cff" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -432,7 +456,7 @@ organization: message.attributes.uriParams.organization default "Fire"
 		
 </ee:transform>
 		<choice doc:name="Choice" doc:id="3efcd6e4-813e-437f-a485-c287c2aa12eb" >
-			<when expression='#[vars.infoType ~= "Expense"]'>
+			<when expression='#[vars.infoType ~= "Expense-Itemized"]'>
 				<http:request method="GET" doc:name="Pull Expense" doc:id="c7c4805c-6df1-4964-87e5-288d73c148d4" config-ref="ExpenseConnection" path="/{organization}">
 					<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -447,8 +471,8 @@ organization: message.attributes.uriParams.organization default "Fire"
 }]]]></http:query-params>
 				</http:request>
 			</when>
-			<otherwise >
-				<http:request method="GET" doc:name="Pull Revenue" doc:id="7b890271-666a-45a9-b77e-48333c7e588a" config-ref="RevenueConnection" path="/{organization}">
+			<when expression='#[vars.infoType ~= "Revenue-Collated"]'>
+				<http:request method="GET" doc:name="Pull Collated Revenue" doc:id="2b04e2f2-74b5-4d75-90a9-1cddc889fa3d" config-ref="RevenueConnection" path="/{organization}/summary">
 					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -461,7 +485,7 @@ organization: message.attributes.uriParams.organization default "Fire"
 	"end" : vars.endDate
 }]]]></http:query-params>
 				</http:request>
-				<ee:transform doc:name="Transform Message" doc:id="dae4ac06-8f4b-4419-842a-199ff9e3e421" >
+				<ee:transform doc:name="Map to Standard Output" doc:id="fc133a87-3eba-4a97-b3be-2087dc4c1521" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -469,15 +493,60 @@ output application/json
 //dylan :^)
 payload map
 {
-	organization:$.name,
-	description:$.item,
-	amount:$.cost,
-	date:$.date
+	organization:$.name default "Fire",
+	description:$.item default "Description",
+	amount:$.cost default 0 as String {format:"#.00"},
+	date:$.date default ""
 	
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<logger level="INFO" doc:name="Logger" doc:id="d6ea5544-a68f-4bf1-88b1-f0aa85bd2ad4" />
+			</when>
+			<when expression='#[vars.infoType ~= "Expense-Collated"]'>
+				<http:request method="GET" doc:name="Pull Collated Expense" doc:id="d9ad7c44-043c-432d-a697-06eb53f6dbc0" config-ref="ExpenseConnection" path="/{organization}/summary">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.startDate,
+	"end" : vars.endDate
+}]]]></http:query-params>
+				</http:request>
+			</when>
+			<otherwise >
+				<http:request method="GET" doc:name="Pull Itemized Revenue" doc:id="7b890271-666a-45a9-b77e-48333c7e588a" config-ref="RevenueConnection" path="/{organization}">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"organization" : vars.organization
+}]]]></http:uri-params>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"start" : vars.startDate,
+	"end" : vars.endDate
+}]]]></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Map to Standard Output" doc:id="dae4ac06-8f4b-4419-842a-199ff9e3e421" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+//dylan :^)
+payload map
+{
+	organization:$.name default "Fire",
+	description:$.item default "description",
+	amount:$.cost default 0 as String {format:"#.00"},
+	date:$.date default "2019-06-18"
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
 			</otherwise>
 		</choice>
 		<choice doc:name="Choice" doc:id="f4c63cc7-2cc7-40d7-8477-de7dd5157713" >
@@ -523,7 +592,12 @@ payload
 			</otherwise>
 		</choice>
 	</flow>
-	<flow name="SALESFORCE-finances\revenue\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" >
+	<flow name="SALESFORCE-finances\revenue\(organization)" doc:id="9488f0ca-2f0b-49fd-99de-be7501918984" doc:description="Makes an HTTP GET to Salesforce's Revenue service for an organization in a timeframe
+
+Parameters
+{organization}				queryParam			denotes the organization whose data is being pulled
+{start}						queryParam			sets the start date of the timeframe for when data is being pulled
+{end}						queryParam			sets the end date of the timeframe for when data is being pulled">
 		<http:listener doc:name="/finances/revenue/(organization)" doc:id="27a69dc5-94d6-4725-8a35-8a58ccdb82c6" config-ref="HTTP_Listener_config" path="/financessalesforce/{organization}"/>
 		<ee:transform doc:name="Store organization, start, end" doc:id="6e917c85-d223-4514-a68b-7f4dafb406de" >
 			<ee:message >
@@ -548,7 +622,12 @@ payload
 }]]]></http:query-params>
 		</http:request>
 	</flow>
-	<flow name="SALESFORCE-finances\expenses\(organization)" doc:id="3220f7c9-f384-4b26-a47c-3acd9aff26af" >
+	<flow name="SALESFORCE-finances\expenses\(organization)" doc:id="3220f7c9-f384-4b26-a47c-3acd9aff26af" doc:description="Makes an HTTP GET to Salesforce's Revenue service for an organization in a timeframe
+
+Parameters
+{organization}				queryParam			denotes the organization whose data is being pulled
+{start}						queryParam			sets the start date of the timeframe for when data is being pulled
+{end}						queryParam			sets the end date of the timeframe for when data is being pulled">
 		<http:listener doc:name="/finances/expenses/(organization)" doc:id="82ae97a3-c4d5-4490-8e66-4deda36f5009" config-ref="HTTP_Listener_config" path="/finances/expenses/{organization}"/>
 		<ee:transform doc:name="Store organization, start, end" doc:id="2fe4f98c-613b-49bd-9379-c79fe0dcdc55" >
 			<ee:message >
@@ -573,7 +652,12 @@ payload
 }]]]></http:query-params>
 		</http:request>
 	</flow>
-	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" >
+	<flow name="getAssets" doc:id="6a9c232e-aed0-4ee4-bfae-356276100d2a" doc:description="Retrieves a list of Assets for a department by accessing expenditures for the department, then creating a JSON object of the different expenditures made by name.
+
+Parameter
+{organization}				queryParam			denotes the organization whose assets are being pulled
+
+">
 		<http:listener doc:name="getAssetsByOrganization" doc:id="c864561c-8ceb-4f64-b406-4022b87e9293" config-ref="HTTP_Listener_config" path="/assets/{organization}"/>
 		<ee:transform doc:name="Store organization" doc:id="0b57b309-9c44-4817-a87f-ec4feaec11ca" >
 			<ee:message >
@@ -600,7 +684,10 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="grabStockRevenue" doc:id="8b7f87b9-8bf0-49a1-a773-38db23b9b7c0" >
+	<flow name="grabStockRevenue" doc:id="8b7f87b9-8bf0-49a1-a773-38db23b9b7c0" doc:description="Retrieves the revenue that a department has made from stocks
+
+Paramterers
+{organization}				queryParam			denotes the organization whose information is being pulled">
 		<http:listener doc:name="grabStockRevenue" doc:id="3375a9cb-5362-472d-be12-af810d3c47c4" config-ref="HTTP_Listener_config" path="/stock/{organization}/revenue"/>
 		<http:request method="GET" doc:name="Grab StockRevenue by Organization" doc:id="c08b41a4-ef87-42e0-9e0b-039655b2f524" config-ref="MicroserviceStockConfiguration" path="/aggregate/{organization}">
 			<http:uri-params ><![CDATA[#[output application/java
@@ -610,7 +697,10 @@ output application/json
 }]]]></http:uri-params>
 		</http:request>
 	</flow>
-	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" >
+	<flow name="grabStockExpenses" doc:id="84f1e42f-c2d2-48af-9f2a-249ed7b26430" doc:description="Retrieves the expenses that a department has spent on stocks
+
+Paramterers
+{organization}				queryParam			denotes the organization whose information is being pulled">
 		<http:listener doc:name="grabStockExpenses" doc:id="50293c85-4600-4819-9833-08a70fad463f" config-ref="HTTP_Listener_config" path="/stock/{organization}/expense"/>
 		<http:request method="GET" doc:name="Get StockExpenses by Organization" doc:id="3e2eb14c-6bb4-4020-b5ee-b05e7fa5496d" config-ref="SalesforceStockConfiguration" path="/{organization}" outputMimeType="application/json">
 			<http:uri-params ><![CDATA[#[output application/java
@@ -620,7 +710,12 @@ output application/json
 }]]]></http:uri-params>
 		</http:request>
 	</flow>
-	<flow name="CreateBuildingExpense" doc:id="5e7e04f2-4e56-43f5-a2b4-545c92bb07fc" >
+	<flow name="CreateBuildingExpense" doc:id="5e7e04f2-4e56-43f5-a2b4-545c92bb07fc" doc:description="Makes an HTTP Request to the Quoting service with square-footage to get a quote for the building, then creates a new Expense in the Expense service for the department
+
+Parameters
+{organization}			queryParam			denotes the organization who is planning a new building
+{sqfeet}				queryParam			denotes the square footage that is planned for the new building
+">
 		<http:listener doc:name="createBuildingExpense" doc:id="73551d28-bfa7-4736-899a-813c00da862d" config-ref="HTTP_Listener_config" path="/building/{organization}/{sqfeet}"/>
 		<ee:transform doc:name="Save organization and sqfeet" doc:id="ecaaef67-63ed-4746-96ea-fb79072eaef5" >
 			<ee:message >
@@ -710,7 +805,9 @@ payload]]></ee:set-payload>
 	"Key" : "Value"
 }]]]></http:uri-params>
 				</http:request>
-			</when>
+				<logger level="INFO" doc:name="Logger" doc:id="084a339a-a9b7-4a43-9f07-f1b2470e3afe" />
+			
+</when>
 			<otherwise >
 				<raise-error doc:name="Raise error" doc:id="1a695ee7-93c7-4003-94f5-8e75974e253d" type="ORDER:INVALID_DATA" description="Type is invalid. Please use type revenue or expense."/>
 			</otherwise>
